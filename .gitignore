@@ -1,0 +1,10 @@
+# Binaries
+main
+bin/
+
+# Dependency
+vendor/
+
+# OS/Editor
+.DS_Store
+.vscode/
