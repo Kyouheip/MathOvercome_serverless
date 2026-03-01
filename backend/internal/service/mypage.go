@@ -10,10 +10,10 @@ import (
 )
 
 type MypageService struct {
-	repo *repository.Repository
+	repo repository.MypageRepo
 }
 
-func NewMypageService(r *repository.Repository) *MypageService {
+func NewMypageService(r repository.MypageRepo) *MypageService {
 	return &MypageService{repo: r}
 }
 
