@@ -1,8 +1,6 @@
-package main
+package router
 
 import (
-	"log"
-	"os"
 	"time"
 
 	"github.com/gin-contrib/cors"
@@ -11,27 +9,13 @@ import (
 	"github.com/gin-gonic/gin"
 
 	"github.com/Kyouheip/MathOvercome_serverless/internal/handler"
-	_ "github.com/Kyouheip/MathOvercome_serverless/internal/model" // gob.Register の init() を呼ぶ
 	"github.com/Kyouheip/MathOvercome_serverless/internal/repository"
 	"github.com/Kyouheip/MathOvercome_serverless/internal/service"
 
-	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
 
-func main() {
-	// DB接続
-	dsn := os.Getenv("DB_DSN")
-	if dsn == "" {
-		log.Fatal("DB_DSN environment variable is required")
-	}
-
-	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
-	if err != nil {
-		log.Fatalf("failed to connect database: %v", err)
-	}
-
-	// DI
+func New(db *gorm.DB, sessionSecret string) *gin.Engine {
 	repo := repository.NewRepository(db)
 	loginSvc := service.NewLoginService(repo)
 	testSessSvc := service.NewTestSessionService(repo)
@@ -41,12 +25,10 @@ func main() {
 
 	r := gin.Default()
 
-	// CORS (Java の @CrossOrigin と同じ設定)
 	r.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{
+		AllowOrigins: []string{
 			"http://localhost:3000",
 			"https://math-overcome.vercel.app",
-			"http://52.68.88.3",
 		},
 		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"},
@@ -54,14 +36,12 @@ func main() {
 		MaxAge:           12 * time.Hour,
 	}))
 
-	// セッション (Cookie Store)
-	// TODO: Lambda 運用時は DynamoDB や Redis ベースのストアに切り替える
-	store := cookie.NewStore([]byte(os.Getenv("SESSION_SECRET")))
+	store := cookie.NewStore([]byte(sessionSecret))
 	r.Use(sessions.Sessions("session", store))
 
-	// ルーティング (Java の @RequestMapping と一致)
 	auth := r.Group("/auth")
 	{
+		auth.GET("/ping", authHandler.Ping)
 		auth.POST("/login", authHandler.Login)
 		auth.POST("/logout", authHandler.Logout)
 		auth.POST("/register", authHandler.Register)
@@ -75,15 +55,5 @@ func main() {
 		sess.GET("/mypage", sessionHandler.GetMypage)
 	}
 
-	// TODO: Lambda デプロイ時は以下に切り替え
-	// ginLambda := ginadapter.New(r)
-	// lambda.Start(func(ctx context.Context, req events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
-	// 	return ginLambda.ProxyWithContext(ctx, req)
-	// })
-
-	port := os.Getenv("PORT")
-	if port == "" {
-		port = "8080"
-	}
-	r.Run(":" + port)
+	return r
 }

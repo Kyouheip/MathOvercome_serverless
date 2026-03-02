@@ -3,6 +3,8 @@ module github.com/Kyouheip/MathOvercome_serverless
 go 1.24.0
 
 require (
+	github.com/aws/aws-lambda-go v1.52.0
+	github.com/awslabs/aws-lambda-go-api-proxy v0.16.2
 	github.com/gin-contrib/cors v1.7.6
 	github.com/gin-contrib/sessions v1.0.4
 	github.com/gin-gonic/gin v1.11.0
