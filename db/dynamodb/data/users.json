@@ -1,0 +1,154 @@
+{
+  "MathOvercome": [
+    {
+      "PutRequest": {
+        "Item": {
+          "pk": {
+            "S": "USER#2"
+          },
+          "sk": {
+            "S": "#METADATA"
+          },
+          "gsi1pk": {
+            "S": "USER"
+          },
+          "gsi1sk": {
+            "S": "USER#2"
+          },
+          "id": {
+            "N": "2"
+          },
+          "user_name": {
+            "S": "恭平"
+          },
+          "user_id": {
+            "S": "kaizokuoukyou"
+          },
+          "password": {
+            "S": "$2b$10$GAk2E.oxHxugQcnFaFoQYe4CSKV.1dJjV3A0q9uDvW6EfrIUC52nu"
+          }
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "pk": {
+            "S": "USER#3"
+          },
+          "sk": {
+            "S": "#METADATA"
+          },
+          "gsi1pk": {
+            "S": "USER"
+          },
+          "gsi1sk": {
+            "S": "USER#3"
+          },
+          "id": {
+            "N": "3"
+          },
+          "user_name": {
+            "S": "dg32523"
+          },
+          "user_id": {
+            "S": "234543232"
+          },
+          "password": {
+            "S": "$2b$10$GAk2E.oxHxugQcnFaFoQYe4CSKV.1dJjV3A0q9uDvW6EfrIUC52nu"
+          }
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "pk": {
+            "S": "USER#4"
+          },
+          "sk": {
+            "S": "#METADATA"
+          },
+          "gsi1pk": {
+            "S": "USER"
+          },
+          "gsi1sk": {
+            "S": "USER#4"
+          },
+          "id": {
+            "N": "4"
+          },
+          "user_name": {
+            "S": "342343243423"
+          },
+          "user_id": {
+            "S": "34234434"
+          },
+          "password": {
+            "S": "$2b$10$GAk2E.oxHxugQcnFaFoQYe4CSKV.1dJjV3A0q9uDvW6EfrIUC52nu"
+          }
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "pk": {
+            "S": "USER#5"
+          },
+          "sk": {
+            "S": "#METADATA"
+          },
+          "gsi1pk": {
+            "S": "USER"
+          },
+          "gsi1sk": {
+            "S": "USER#5"
+          },
+          "id": {
+            "N": "5"
+          },
+          "user_name": {
+            "S": "43242342"
+          },
+          "user_id": {
+            "S": "32432434324324"
+          },
+          "password": {
+            "S": "$2b$10$GAk2E.oxHxugQcnFaFoQYe4CSKV.1dJjV3A0q9uDvW6EfrIUC52nu"
+          }
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "pk": {
+            "S": "USER#6"
+          },
+          "sk": {
+            "S": "#METADATA"
+          },
+          "gsi1pk": {
+            "S": "USER"
+          },
+          "gsi1sk": {
+            "S": "USER#6"
+          },
+          "id": {
+            "N": "6"
+          },
+          "user_name": {
+            "S": "435"
+          },
+          "user_id": {
+            "S": "retrter"
+          },
+          "password": {
+            "S": "$2b$10$GAk2E.oxHxugQcnFaFoQYe4CSKV.1dJjV3A0q9uDvW6EfrIUC52nu"
+          }
+        }
+      }
+    }
+  ]
+}

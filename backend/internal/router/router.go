@@ -12,11 +12,11 @@ import (
 	"github.com/Kyouheip/MathOvercome_serverless/internal/repository"
 	"github.com/Kyouheip/MathOvercome_serverless/internal/service"
 
-	"gorm.io/gorm"
+	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
 )
 
-func New(db *gorm.DB, sessionSecret string) *gin.Engine {
-	repo := repository.NewRepository(db)
+func New(client *dynamodb.Client, sessionSecret string) *gin.Engine {
+	repo := repository.NewRepository(client)
 	loginSvc := service.NewLoginService(repo)
 	testSessSvc := service.NewTestSessionService(repo)
 	mypageSvc := service.NewMypageService(repo)

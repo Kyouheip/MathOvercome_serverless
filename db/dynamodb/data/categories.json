@@ -1,0 +1,172 @@
+{
+  "MathOvercome": [
+    {
+      "PutRequest": {
+        "Item": {
+          "pk": {
+            "S": "CATEGORY#1"
+          },
+          "sk": {
+            "S": "#METADATA"
+          },
+          "gsi1pk": {
+            "S": "CATEGORY"
+          },
+          "gsi1sk": {
+            "S": "CATEGORY#1"
+          },
+          "id": {
+            "N": "1"
+          },
+          "name": {
+            "S": "数と式"
+          }
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "pk": {
+            "S": "CATEGORY#2"
+          },
+          "sk": {
+            "S": "#METADATA"
+          },
+          "gsi1pk": {
+            "S": "CATEGORY"
+          },
+          "gsi1sk": {
+            "S": "CATEGORY#2"
+          },
+          "id": {
+            "N": "2"
+          },
+          "name": {
+            "S": "2次関数"
+          }
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "pk": {
+            "S": "CATEGORY#3"
+          },
+          "sk": {
+            "S": "#METADATA"
+          },
+          "gsi1pk": {
+            "S": "CATEGORY"
+          },
+          "gsi1sk": {
+            "S": "CATEGORY#3"
+          },
+          "id": {
+            "N": "3"
+          },
+          "name": {
+            "S": "図形と計量"
+          }
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "pk": {
+            "S": "CATEGORY#4"
+          },
+          "sk": {
+            "S": "#METADATA"
+          },
+          "gsi1pk": {
+            "S": "CATEGORY"
+          },
+          "gsi1sk": {
+            "S": "CATEGORY#4"
+          },
+          "id": {
+            "N": "4"
+          },
+          "name": {
+            "S": "データの分析"
+          }
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "pk": {
+            "S": "CATEGORY#5"
+          },
+          "sk": {
+            "S": "#METADATA"
+          },
+          "gsi1pk": {
+            "S": "CATEGORY"
+          },
+          "gsi1sk": {
+            "S": "CATEGORY#5"
+          },
+          "id": {
+            "N": "5"
+          },
+          "name": {
+            "S": "確率"
+          }
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "pk": {
+            "S": "CATEGORY#6"
+          },
+          "sk": {
+            "S": "#METADATA"
+          },
+          "gsi1pk": {
+            "S": "CATEGORY"
+          },
+          "gsi1sk": {
+            "S": "CATEGORY#6"
+          },
+          "id": {
+            "N": "6"
+          },
+          "name": {
+            "S": "図形の性質"
+          }
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "pk": {
+            "S": "CATEGORY#7"
+          },
+          "sk": {
+            "S": "#METADATA"
+          },
+          "gsi1pk": {
+            "S": "CATEGORY"
+          },
+          "gsi1sk": {
+            "S": "CATEGORY#7"
+          },
+          "id": {
+            "N": "7"
+          },
+          "name": {
+            "S": "整数"
+          }
+        }
+      }
+    }
+  ]
+}

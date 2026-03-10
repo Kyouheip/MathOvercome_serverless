@@ -9,32 +9,33 @@ import (
 	"github.com/aws/aws-lambda-go/lambda"
 	ginadapter "github.com/awslabs/aws-lambda-go-api-proxy/gin"
 
-	_ "github.com/Kyouheip/MathOvercome_serverless/internal/model"
-	"github.com/Kyouheip/MathOvercome_serverless/internal/router"
+	"github.com/aws/aws-sdk-go-v2/config"
+	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
 
-	"gorm.io/driver/mysql"
-	"gorm.io/gorm"
+	"github.com/Kyouheip/MathOvercome_serverless/internal/router"
 )
 
 var ginLambda *ginadapter.GinLambda
 
 func init() {
-	dsn := os.Getenv("DB_DSN")
-	if dsn == "" {
-		log.Fatal("DB_DSN environment variable is required")
+	region := os.Getenv("AWS_REGION")
+	if region == "" {
+		region = "ap-northeast-1"
 	}
 
-	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
+	cfg, err := config.LoadDefaultConfig(context.Background(), config.WithRegion(region))
 	if err != nil {
-		log.Fatalf("failed to connect database: %v", err)
+		log.Fatalf("failed to load AWS config: %v", err)
 	}
+
+	client := dynamodb.NewFromConfig(cfg)
 
 	secret := os.Getenv("SESSION_SECRET")
 	if secret == "" {
 		log.Fatal("SESSION_SECRET environment variable is required")
 	}
 
-	r := router.New(db, secret)
+	r := router.New(client, secret)
 	ginLambda = ginadapter.New(r)
 }
 

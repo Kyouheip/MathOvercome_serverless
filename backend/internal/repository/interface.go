@@ -28,6 +28,6 @@ type SessionRepo interface {
 	CountSessionProblems(sessionID uint64) (int64, error)
 	FindSessionProblemByIdx(sessionID uint64, idx int) (*model.SessionProblem, error)
 	FindSessionProblemsBySessionID(sessionID uint64) ([]model.SessionProblem, error)
-	FindChoiceByID(id uint64) (*model.Choice, error)
+	FindChoiceByProblemAndChoiceID(problemID, choiceID uint64) (*model.Choice, error)
 	SaveSessionProblem(sp *model.SessionProblem) error
 }

@@ -1,67 +1,153 @@
 package repository
 
-import "time"
+import (
+	"fmt"
+	"sort"
+	"time"
+
+	"github.com/aws/aws-sdk-go-v2/aws"
+	"github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue"
+	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
+	"github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
+)
 
 type CategoryStats struct {
-	Name         string `gorm:"column:name"`
-	TotalCount   int    `gorm:"column:total_count"`
-	CorrectCount int    `gorm:"column:correct_count"`
-}
-
-func (r *Repository) GetCategoryStats(sessionID uint64) ([]CategoryStats, error) {
-	var stats []CategoryStats
-	sql := `
-		SELECT c.name,
-		       COUNT(sp.id) AS total_count,
-		       SUM(CASE WHEN sp.is_correct = true THEN 1 ELSE 0 END) AS correct_count
-		FROM sessionproblems AS sp
-		INNER JOIN problems AS p ON sp.problem_id = p.id
-		INNER JOIN categories AS c ON p.category_id = c.id
-		WHERE sp.session_id = ?
-		GROUP BY c.name`
-
-	err := r.db.Raw(sql, sessionID).Scan(&stats).Error
-	return stats, err
+	Name         string
+	TotalCount   int
+	CorrectCount int
 }
 
 type SessionProblemRow struct {
-	SessionID    uint64    `gorm:"column:session_id"`
-	StartTime    time.Time `gorm:"column:start_time"`
-	IsCorrect    bool      `gorm:"column:is_correct"`
-	CategoryName string    `gorm:"column:category_name"`
+	SessionID    uint64
+	StartTime    time.Time
+	IsCorrect    bool
+	CategoryName string
 }
 
+// GetSessionProblemsRaw はユーザーの全セッション×全SPを結合して返す。
+// セッションは降順（新しい順）、SP は昇順。
 func (r *Repository) GetSessionProblemsRaw(userID uint64) ([]SessionProblemRow, error) {
-	var rows []SessionProblemRow
-	sql := `
-		SELECT ts.id AS session_id,
-		       ts.start_time,
-		       sp.is_correct,
-		       c.name AS category_name
-		FROM test_sessions AS ts
-		INNER JOIN sessionproblems AS sp ON sp.session_id = ts.id
-		INNER JOIN problems AS p ON sp.problem_id = p.id
-		INNER JOIN categories AS c ON p.category_id = c.id
-		WHERE ts.user_id = ?
-		ORDER BY ts.id DESC, sp.id`
+	// GSI1: gsi1pk = USER#<userID> → セッション一覧を降順で取得
+	sessOut, err := r.client.Query(bg(), &dynamodb.QueryInput{
+		TableName:              aws.String(tableName()),
+		IndexName:              aws.String("GSI1"),
+		KeyConditionExpression: aws.String("gsi1pk = :gsi1pk"),
+		ExpressionAttributeValues: map[string]types.AttributeValue{
+			":gsi1pk": &types.AttributeValueMemberS{Value: fmt.Sprintf("USER#%d", userID)},
+		},
+		ScanIndexForward: aws.Bool(false), // 降順
+	})
+	if err != nil {
+		return nil, err
+	}
 
-	err := r.db.Raw(sql, userID).Scan(&rows).Error
-	return rows, err
+	var rows []SessionProblemRow
+
+	for _, sessItem := range sessOut.Items {
+		var ds dynamoSession
+		if err := attributevalue.UnmarshalMap(sessItem, &ds); err != nil {
+			return nil, err
+		}
+		startTime, _ := time.Parse("2006-01-02 15:04:05", ds.StartTime)
+
+		sps, err := r.querySessionProblems(ds.ID)
+		if err != nil {
+			return nil, err
+		}
+
+		for _, dsp := range sps {
+			isCorrect := false
+			if dsp.IsCorrect != nil {
+				isCorrect = *dsp.IsCorrect
+			}
+			rows = append(rows, SessionProblemRow{
+				SessionID:    ds.ID,
+				StartTime:    startTime,
+				IsCorrect:    isCorrect,
+				CategoryName: dsp.CategoryName,
+			})
+		}
+	}
+
+	return rows, nil
 }
 
-func (r *Repository) GetWeakCategories(sessionID uint64) ([]string, error) {
-	var names []string
-	sql := `
-		SELECT c.name
-		FROM sessionproblems AS sp
-		INNER JOIN problems AS p ON sp.problem_id = p.id
-		INNER JOIN categories AS c ON p.category_id = c.id
-		WHERE sp.session_id = ?
-		GROUP BY c.name
-		HAVING SUM(CASE WHEN sp.is_correct = true THEN 1 ELSE 0 END) * 1.0 / COUNT(sp.id) < 0.5
-		ORDER BY SUM(CASE WHEN sp.is_correct = true THEN 1 ELSE 0 END) * 1.0 / COUNT(sp.id) ASC
-		LIMIT 2`
+// GetCategoryStats はセッション内のSPをカテゴリ別に集計して返す。
+func (r *Repository) GetCategoryStats(sessionID uint64) ([]CategoryStats, error) {
+	sps, err := r.querySessionProblems(sessionID)
+	if err != nil {
+		return nil, err
+	}
 
-	err := r.db.Raw(sql, sessionID).Scan(&names).Error
-	return names, err
+	statsMap := make(map[string]*CategoryStats)
+	var order []string
+
+	for _, dsp := range sps {
+		if _, exists := statsMap[dsp.CategoryName]; !exists {
+			statsMap[dsp.CategoryName] = &CategoryStats{Name: dsp.CategoryName}
+			order = append(order, dsp.CategoryName)
+		}
+		statsMap[dsp.CategoryName].TotalCount++
+		if dsp.IsCorrect != nil && *dsp.IsCorrect {
+			statsMap[dsp.CategoryName].CorrectCount++
+		}
+	}
+
+	result := make([]CategoryStats, len(order))
+	for i, name := range order {
+		result[i] = *statsMap[name]
+	}
+	return result, nil
+}
+
+// GetWeakCategories は正答率 < 0.5 のカテゴリを昇順で最大2件返す。
+func (r *Repository) GetWeakCategories(sessionID uint64) ([]string, error) {
+	sps, err := r.querySessionProblems(sessionID)
+	if err != nil {
+		return nil, err
+	}
+
+	type catStat struct {
+		total   int
+		correct int
+	}
+	statsMap := make(map[string]*catStat)
+	var order []string
+
+	for _, dsp := range sps {
+		if _, exists := statsMap[dsp.CategoryName]; !exists {
+			statsMap[dsp.CategoryName] = &catStat{}
+			order = append(order, dsp.CategoryName)
+		}
+		statsMap[dsp.CategoryName].total++
+		if dsp.IsCorrect != nil && *dsp.IsCorrect {
+			statsMap[dsp.CategoryName].correct++
+		}
+	}
+
+	type weakCat struct {
+		name string
+		rate float64
+	}
+	var weaks []weakCat
+	for _, name := range order {
+		st := statsMap[name]
+		if st.total == 0 {
+			continue
+		}
+		rate := float64(st.correct) / float64(st.total)
+		if rate < 0.5 {
+			weaks = append(weaks, weakCat{name: name, rate: rate})
+		}
+	}
+
+	sort.Slice(weaks, func(i, j int) bool {
+		return weaks[i].rate < weaks[j].rate
+	})
+
+	var names []string
+	for i := 0; i < len(weaks) && i < 2; i++ {
+		names = append(names, weaks[i].name)
+	}
+	return names, nil
 }

@@ -1,21 +1,29 @@
 services:
-  db:
-    image: mysql:8.0
-    container_name: mathovercome-db
+  dynamodb:
+    image: amazon/dynamodb-local:latest
+    container_name: mathovercome-dynamodb
     ports:
-      - "3307:3306"
-    environment:
-      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
-      MYSQL_DATABASE: mathovercomedb
-    volumes:
-      - mysql-data:/var/lib/mysql
-      - ./db/init:/docker-entrypoint-initdb.d
-    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+      - "8000:8000"
+    command: ["-jar", "DynamoDBLocal.jar", "-sharedDb"]
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${DB_PASSWORD}"]
+      test: ["CMD-SHELL", "curl -sf http://localhost:8000 || exit 1"]
       interval: 5s
-      timeout: 10s
+      timeout: 5s
       retries: 10
+
+  dynamodb-setup:
+    image: amazon/aws-cli:latest
+    container_name: mathovercome-dynamodb-setup
+    depends_on:
+      dynamodb:
+        condition: service_healthy
+    environment:
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+      AWS_DEFAULT_REGION: ${AWS_REGION}
+    volumes:
+      - ./db/dynamodb:/dynamodb
+    entrypoint: ["/bin/sh", "/dynamodb/init.sh"]
 
   backend:
     build:
@@ -25,12 +33,16 @@ services:
     ports:
       - "8080:8080"
     environment:
-      DB_DSN: ${DB_DSN}
+      DYNAMODB_ENDPOINT: ${DYNAMODB_ENDPOINT}
+      DYNAMODB_TABLE: ${DYNAMODB_TABLE}
+      AWS_REGION: ${AWS_REGION}
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
       SESSION_SECRET: ${SESSION_SECRET}
       PORT: "8080"
     depends_on:
-      db:
-        condition: service_healthy
+      dynamodb-setup:
+        condition: service_completed_successfully
     restart: on-failure
 
   frontend:
@@ -44,6 +56,3 @@ services:
       - "3000:3000"
     depends_on:
       - backend
-
-volumes:
-  mysql-data:

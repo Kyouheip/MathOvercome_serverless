@@ -160,7 +160,7 @@ func (h *SessionHandler) SubmitAnswer(c *gin.Context) {
 	// 未解答(null)の場合は処理なし
 	if req.SelectedChoiceID != nil {
 		sp := sps[idx]
-		selectedChoice, err := h.repo.FindChoiceByID(uint64(*req.SelectedChoiceID))
+		selectedChoice, err := h.repo.FindChoiceByProblemAndChoiceID(sp.ProblemID, uint64(*req.SelectedChoiceID))
 		if err != nil {
 			c.Status(http.StatusBadRequest)
 			return

@@ -1,0 +1,604 @@
+{
+  "MathOvercome": [
+    {
+      "PutRequest": {
+        "Item": {
+          "pk": {
+            "S": "PROBLEM#197"
+          },
+          "sk": {
+            "S": "CHOICE#487"
+          },
+          "id": {
+            "N": "487"
+          },
+          "problem_id": {
+            "N": "197"
+          },
+          "choice_text": {
+            "S": "x⁴ - 5x³ + 18x² - 15x + 25"
+          },
+          "is_correct": {
+            "BOOL": false
+          }
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "pk": {
+            "S": "PROBLEM#197"
+          },
+          "sk": {
+            "S": "CHOICE#488"
+          },
+          "id": {
+            "N": "488"
+          },
+          "problem_id": {
+            "N": "197"
+          },
+          "choice_text": {
+            "S": "x⁴ - 10x³ + 35x² - 50x + 24"
+          },
+          "is_correct": {
+            "BOOL": true
+          }
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "pk": {
+            "S": "PROBLEM#197"
+          },
+          "sk": {
+            "S": "CHOICE#489"
+          },
+          "id": {
+            "N": "489"
+          },
+          "problem_id": {
+            "N": "197"
+          },
+          "choice_text": {
+            "S": "x⁴ + 16x³ + 8x² - 50x + 20"
+          },
+          "is_correct": {
+            "BOOL": false
+          }
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "pk": {
+            "S": "PROBLEM#197"
+          },
+          "sk": {
+            "S": "CHOICE#490"
+          },
+          "id": {
+            "N": "490"
+          },
+          "problem_id": {
+            "N": "197"
+          },
+          "choice_text": {
+            "S": "x⁴ + 24x² - 24x² - 36x + 12"
+          },
+          "is_correct": {
+            "BOOL": false
+          }
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "pk": {
+            "S": "PROBLEM#198"
+          },
+          "sk": {
+            "S": "CHOICE#491"
+          },
+          "id": {
+            "N": "491"
+          },
+          "problem_id": {
+            "N": "198"
+          },
+          "choice_text": {
+            "S": "(x-1)(x+5)(x+3)(x-2)"
+          },
+          "is_correct": {
+            "BOOL": false
+          }
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "pk": {
+            "S": "PROBLEM#198"
+          },
+          "sk": {
+            "S": "CHOICE#492"
+          },
+          "id": {
+            "N": "492"
+          },
+          "problem_id": {
+            "N": "198"
+          },
+          "choice_text": {
+            "S": "(x+1)(x+2)(x-1)(x+4)"
+          },
+          "is_correct": {
+            "BOOL": true
+          }
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "pk": {
+            "S": "PROBLEM#198"
+          },
+          "sk": {
+            "S": "CHOICE#493"
+          },
+          "id": {
+            "N": "493"
+          },
+          "problem_id": {
+            "N": "198"
+          },
+          "choice_text": {
+            "S": "(x-1)(x-6)(x+2)(x+3)"
+          },
+          "is_correct": {
+            "BOOL": false
+          }
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "pk": {
+            "S": "PROBLEM#198"
+          },
+          "sk": {
+            "S": "CHOICE#494"
+          },
+          "id": {
+            "N": "494"
+          },
+          "problem_id": {
+            "N": "198"
+          },
+          "choice_text": {
+            "S": "(x+1)(x-2)(x+3)(x-7)"
+          },
+          "is_correct": {
+            "BOOL": false
+          }
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "pk": {
+            "S": "PROBLEM#199"
+          },
+          "sk": {
+            "S": "CHOICE#495"
+          },
+          "id": {
+            "N": "495"
+          },
+          "problem_id": {
+            "N": "199"
+          },
+          "choice_text": {
+            "S": "(a-b)(b+c)(c-a)"
+          },
+          "is_correct": {
+            "BOOL": false
+          }
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "pk": {
+            "S": "PROBLEM#199"
+          },
+          "sk": {
+            "S": "CHOICE#496"
+          },
+          "id": {
+            "N": "496"
+          },
+          "problem_id": {
+            "N": "199"
+          },
+          "choice_text": {
+            "S": "-(a-b)(b-c)(c-a)"
+          },
+          "is_correct": {
+            "BOOL": true
+          }
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "pk": {
+            "S": "PROBLEM#199"
+          },
+          "sk": {
+            "S": "CHOICE#497"
+          },
+          "id": {
+            "N": "497"
+          },
+          "problem_id": {
+            "N": "199"
+          },
+          "choice_text": {
+            "S": "(a-b)(b-c)(c-a)"
+          },
+          "is_correct": {
+            "BOOL": false
+          }
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "pk": {
+            "S": "PROBLEM#199"
+          },
+          "sk": {
+            "S": "CHOICE#498"
+          },
+          "id": {
+            "N": "498"
+          },
+          "problem_id": {
+            "N": "199"
+          },
+          "choice_text": {
+            "S": "-(a-b)(b-c)(c+a)"
+          },
+          "is_correct": {
+            "BOOL": false
+          }
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "pk": {
+            "S": "PROBLEM#200"
+          },
+          "sk": {
+            "S": "CHOICE#499"
+          },
+          "id": {
+            "N": "499"
+          },
+          "problem_id": {
+            "N": "200"
+          },
+          "choice_text": {
+            "S": "(2x²-1x+1)(2x²-2x+1)"
+          },
+          "is_correct": {
+            "BOOL": false
+          }
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "pk": {
+            "S": "PROBLEM#200"
+          },
+          "sk": {
+            "S": "CHOICE#500"
+          },
+          "id": {
+            "N": "500"
+          },
+          "problem_id": {
+            "N": "200"
+          },
+          "choice_text": {
+            "S": "(2x²-2x+1)(2x²-2x+1)"
+          },
+          "is_correct": {
+            "BOOL": false
+          }
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "pk": {
+            "S": "PROBLEM#200"
+          },
+          "sk": {
+            "S": "CHOICE#501"
+          },
+          "id": {
+            "N": "501"
+          },
+          "problem_id": {
+            "N": "200"
+          },
+          "choice_text": {
+            "S": "(2x²+2x+1)(2x²-2x+1)"
+          },
+          "is_correct": {
+            "BOOL": true
+          }
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "pk": {
+            "S": "PROBLEM#200"
+          },
+          "sk": {
+            "S": "CHOICE#502"
+          },
+          "id": {
+            "N": "502"
+          },
+          "problem_id": {
+            "N": "200"
+          },
+          "choice_text": {
+            "S": "(2x²+2x+1)(2x²+2x+1)"
+          },
+          "is_correct": {
+            "BOOL": false
+          }
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "pk": {
+            "S": "PROBLEM#201"
+          },
+          "sk": {
+            "S": "CHOICE#503"
+          },
+          "id": {
+            "N": "503"
+          },
+          "problem_id": {
+            "N": "201"
+          },
+          "choice_text": {
+            "S": "x=1,4"
+          },
+          "is_correct": {
+            "BOOL": false
+          }
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "pk": {
+            "S": "PROBLEM#201"
+          },
+          "sk": {
+            "S": "CHOICE#504"
+          },
+          "id": {
+            "N": "504"
+          },
+          "problem_id": {
+            "N": "201"
+          },
+          "choice_text": {
+            "S": "x=1,3"
+          },
+          "is_correct": {
+            "BOOL": true
+          }
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "pk": {
+            "S": "PROBLEM#201"
+          },
+          "sk": {
+            "S": "CHOICE#505"
+          },
+          "id": {
+            "N": "505"
+          },
+          "problem_id": {
+            "N": "201"
+          },
+          "choice_text": {
+            "S": "x=-1,2"
+          },
+          "is_correct": {
+            "BOOL": false
+          }
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "pk": {
+            "S": "PROBLEM#201"
+          },
+          "sk": {
+            "S": "CHOICE#506"
+          },
+          "id": {
+            "N": "506"
+          },
+          "problem_id": {
+            "N": "201"
+          },
+          "choice_text": {
+            "S": "x=5,8"
+          },
+          "is_correct": {
+            "BOOL": false
+          }
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "pk": {
+            "S": "PROBLEM#202"
+          },
+          "sk": {
+            "S": "CHOICE#507"
+          },
+          "id": {
+            "N": "507"
+          },
+          "problem_id": {
+            "N": "202"
+          },
+          "choice_text": {
+            "S": "x<5"
+          },
+          "is_correct": {
+            "BOOL": false
+          }
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "pk": {
+            "S": "PROBLEM#202"
+          },
+          "sk": {
+            "S": "CHOICE#508"
+          },
+          "id": {
+            "N": "508"
+          },
+          "problem_id": {
+            "N": "202"
+          },
+          "choice_text": {
+            "S": "x>1"
+          },
+          "is_correct": {
+            "BOOL": true
+          }
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "pk": {
+            "S": "PROBLEM#202"
+          },
+          "sk": {
+            "S": "CHOICE#509"
+          },
+          "id": {
+            "N": "509"
+          },
+          "problem_id": {
+            "N": "202"
+          },
+          "choice_text": {
+            "S": "x>8"
+          },
+          "is_correct": {
+            "BOOL": false
+          }
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "pk": {
+            "S": "PROBLEM#202"
+          },
+          "sk": {
+            "S": "CHOICE#510"
+          },
+          "id": {
+            "N": "510"
+          },
+          "problem_id": {
+            "N": "202"
+          },
+          "choice_text": {
+            "S": "x<3"
+          },
+          "is_correct": {
+            "BOOL": false
+          }
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "pk": {
+            "S": "PROBLEM#203"
+          },
+          "sk": {
+            "S": "CHOICE#511"
+          },
+          "id": {
+            "N": "511"
+          },
+          "problem_id": {
+            "N": "203"
+          },
+          "choice_text": {
+            "S": "k=3"
+          },
+          "is_correct": {
+            "BOOL": false
+          }
+        }
+      }
+    }
+  ]
+}

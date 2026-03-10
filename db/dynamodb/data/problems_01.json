@@ -1,0 +1,754 @@
+{
+  "MathOvercome": [
+    {
+      "PutRequest": {
+        "Item": {
+          "pk": {
+            "S": "PROBLEM#197"
+          },
+          "sk": {
+            "S": "#METADATA"
+          },
+          "gsi1pk": {
+            "S": "CATEGORY#1"
+          },
+          "gsi1sk": {
+            "S": "PROBLEM#197"
+          },
+          "id": {
+            "N": "197"
+          },
+          "category_id": {
+            "N": "1"
+          },
+          "question": {
+            "S": "次の式を展開せよ<br>(x-1)(x-2)(x-3)(x-4)"
+          },
+          "hint": {
+            "S": "計算する順番を工夫しましょう！"
+          }
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "pk": {
+            "S": "PROBLEM#198"
+          },
+          "sk": {
+            "S": "#METADATA"
+          },
+          "gsi1pk": {
+            "S": "CATEGORY#1"
+          },
+          "gsi1sk": {
+            "S": "PROBLEM#198"
+          },
+          "id": {
+            "N": "198"
+          },
+          "category_id": {
+            "N": "1"
+          },
+          "question": {
+            "S": "次の式を因数分解せよ<br>(x²+3x)² - 2(x²+3x) - 8"
+          },
+          "hint": {
+            "S": "x²+3xをひとまとめにして考えてみましょう (t = x² + 3x とおくなど)"
+          }
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "pk": {
+            "S": "PROBLEM#199"
+          },
+          "sk": {
+            "S": "#METADATA"
+          },
+          "gsi1pk": {
+            "S": "CATEGORY#1"
+          },
+          "gsi1sk": {
+            "S": "PROBLEM#199"
+          },
+          "id": {
+            "N": "199"
+          },
+          "category_id": {
+            "N": "1"
+          },
+          "question": {
+            "S": "次の式を因数分解せよ<br>(b−c)a² + (c−a)b² + (a−b)c²"
+          },
+          "hint": {
+            "S": "次数の低い文字（どれでもよい）に着目して整理してみましょう！"
+          }
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "pk": {
+            "S": "PROBLEM#200"
+          },
+          "sk": {
+            "S": "#METADATA"
+          },
+          "gsi1pk": {
+            "S": "CATEGORY#1"
+          },
+          "gsi1sk": {
+            "S": "PROBLEM#200"
+          },
+          "id": {
+            "N": "200"
+          },
+          "category_id": {
+            "N": "1"
+          },
+          "question": {
+            "S": "次の式を因数分解せよ<br>4x⁴ + 1"
+          },
+          "hint": {
+            "S": "a⁴ + b⁴ の因数分解は (a² + b²)² − 2a²b² の展開を考えましょう！"
+          }
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "pk": {
+            "S": "PROBLEM#201"
+          },
+          "sk": {
+            "S": "#METADATA"
+          },
+          "gsi1pk": {
+            "S": "CATEGORY#1"
+          },
+          "gsi1sk": {
+            "S": "PROBLEM#201"
+          },
+          "id": {
+            "N": "201"
+          },
+          "category_id": {
+            "N": "1"
+          },
+          "question": {
+            "S": "次の方程式を解け<br>|x−1| + |x−2| = x"
+          },
+          "hint": {
+            "S": "絶対値の中が正か負かで場合分けしましょう！"
+          }
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "pk": {
+            "S": "PROBLEM#202"
+          },
+          "sk": {
+            "S": "#METADATA"
+          },
+          "gsi1pk": {
+            "S": "CATEGORY#1"
+          },
+          "gsi1sk": {
+            "S": "PROBLEM#202"
+          },
+          "id": {
+            "N": "202"
+          },
+          "category_id": {
+            "N": "1"
+          },
+          "question": {
+            "S": "次の不等式を解け<br>|x−4| < 3x"
+          },
+          "hint": {
+            "S": "絶対値の中が正か負かで場合分けしましょう！"
+          }
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "pk": {
+            "S": "PROBLEM#203"
+          },
+          "sk": {
+            "S": "#METADATA"
+          },
+          "gsi1pk": {
+            "S": "CATEGORY#2"
+          },
+          "gsi1sk": {
+            "S": "PROBLEM#203"
+          },
+          "id": {
+            "N": "203"
+          },
+          "category_id": {
+            "N": "2"
+          },
+          "question": {
+            "S": "y = −2x² + 8x + k の最大値が 4 であるとき k の値を求めよ"
+          },
+          "hint": {
+            "S": "関数の頂点の y 座標を求めてみましょう！"
+          }
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "pk": {
+            "S": "PROBLEM#204"
+          },
+          "sk": {
+            "S": "#METADATA"
+          },
+          "gsi1pk": {
+            "S": "CATEGORY#2"
+          },
+          "gsi1sk": {
+            "S": "PROBLEM#204"
+          },
+          "id": {
+            "N": "204"
+          },
+          "category_id": {
+            "N": "2"
+          },
+          "question": {
+            "S": "0 ≤ x ≤ 3 のとき f(x)=ax²−2ax+b の最大値が 9、最小値が 1 のとき a,b を求めよ"
+          },
+          "hint": {
+            "S": "a=0, a<0, a>0 の場合で場合分けしてみましょう！"
+          }
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "pk": {
+            "S": "PROBLEM#205"
+          },
+          "sk": {
+            "S": "#METADATA"
+          },
+          "gsi1pk": {
+            "S": "CATEGORY#2"
+          },
+          "gsi1sk": {
+            "S": "PROBLEM#205"
+          },
+          "id": {
+            "N": "205"
+          },
+          "category_id": {
+            "N": "2"
+          },
+          "question": {
+            "S": "x + 2y = 3 のとき 2x² + y² の最小値を求めよ"
+          },
+          "hint": {
+            "S": "x=3−2y を代入して y だけの式で考えましょう！"
+          }
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "pk": {
+            "S": "PROBLEM#206"
+          },
+          "sk": {
+            "S": "#METADATA"
+          },
+          "gsi1pk": {
+            "S": "CATEGORY#2"
+          },
+          "gsi1sk": {
+            "S": "PROBLEM#206"
+          },
+          "id": {
+            "N": "206"
+          },
+          "category_id": {
+            "N": "2"
+          },
+          "question": {
+            "S": "2次方程式 ax²−(a+1)x−(a+3)=0 が −1 < x < 0, 1 < x < 2 でそれぞれ 1 つの実数解をもつとき、a の範囲を求めよ"
+          },
+          "hint": {
+            "S": "x=−1,0,1,2 での式の符号変化を調べましょう！"
+          }
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "pk": {
+            "S": "PROBLEM#207"
+          },
+          "sk": {
+            "S": "#METADATA"
+          },
+          "gsi1pk": {
+            "S": "CATEGORY#2"
+          },
+          "gsi1sk": {
+            "S": "PROBLEM#207"
+          },
+          "id": {
+            "N": "207"
+          },
+          "category_id": {
+            "N": "2"
+          },
+          "question": {
+            "S": "y = x²−mx+m²−3m のグラフが x 軸の正の部分と異なる 2 点で交わるときの m の範囲を求めよ"
+          },
+          "hint": {
+            "S": "判別式 D>0, 軸の x 座標>0, f(0)>0 の 3 つを満たすように条件を立てましょう！"
+          }
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "pk": {
+            "S": "PROBLEM#208"
+          },
+          "sk": {
+            "S": "#METADATA"
+          },
+          "gsi1pk": {
+            "S": "CATEGORY#2"
+          },
+          "gsi1sk": {
+            "S": "PROBLEM#208"
+          },
+          "id": {
+            "N": "208"
+          },
+          "category_id": {
+            "N": "2"
+          },
+          "question": {
+            "S": "不等式 ax² + bx + 3 > 0 の解が −1 < x < 3 であるとき a,b を求めよ"
+          },
+          "hint": {
+            "S": "放物線が上向きか下向きか、また x=−1,3 での値を調べましょう！"
+          }
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "pk": {
+            "S": "PROBLEM#209"
+          },
+          "sk": {
+            "S": "#METADATA"
+          },
+          "gsi1pk": {
+            "S": "CATEGORY#3"
+          },
+          "gsi1sk": {
+            "S": "PROBLEM#209"
+          },
+          "id": {
+            "N": "209"
+          },
+          "category_id": {
+            "N": "3"
+          },
+          "question": {
+            "S": "2cos²θ + 3sinθ − 3 = 0 (0°≤θ≤180°) を解け"
+          },
+          "hint": {
+            "S": "cos²θ = 1−sin²θ に直して sinθ の 2 次方程式にしましょう！"
+          }
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "pk": {
+            "S": "PROBLEM#210"
+          },
+          "sk": {
+            "S": "#METADATA"
+          },
+          "gsi1pk": {
+            "S": "CATEGORY#3"
+          },
+          "gsi1sk": {
+            "S": "PROBLEM#210"
+          },
+          "id": {
+            "N": "210"
+          },
+          "category_id": {
+            "N": "3"
+          },
+          "question": {
+            "S": "0°≤θ≤180° のとき sinθ > 1/2 を満たす θ の範囲を求めよ"
+          },
+          "hint": {
+            "S": "単位円上で y = 1/2 より上の角度を考えましょう！"
+          }
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "pk": {
+            "S": "PROBLEM#211"
+          },
+          "sk": {
+            "S": "#METADATA"
+          },
+          "gsi1pk": {
+            "S": "CATEGORY#3"
+          },
+          "gsi1sk": {
+            "S": "PROBLEM#211"
+          },
+          "id": {
+            "N": "211"
+          },
+          "category_id": {
+            "N": "3"
+          },
+          "question": {
+            "S": "円に内接する四角形 ABCD がある。AB=4, BC=5, CD=7, DA=10 のとき cos A の値を求め、それを利用して四角形の面積を求めよ"
+          },
+          "hint": {
+            "S": "△ABC と △BCD に分けて面積を求め、sin(180°−A)=sin A を使いましょう！"
+          }
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "pk": {
+            "S": "PROBLEM#212"
+          },
+          "sk": {
+            "S": "#METADATA"
+          },
+          "gsi1pk": {
+            "S": "CATEGORY#3"
+          },
+          "gsi1sk": {
+            "S": "PROBLEM#212"
+          },
+          "id": {
+            "N": "212"
+          },
+          "category_id": {
+            "N": "3"
+          },
+          "question": {
+            "S": "cosθ − sinθ = 1/2 (0°<θ<180°) のとき tan θの値を求めよ"
+          },
+          "hint": {
+            "S": "sinθ, cosθ を求めて tanθ=sinθ/cosθ で計算しましょう！"
+          }
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "pk": {
+            "S": "PROBLEM#213"
+          },
+          "sk": {
+            "S": "#METADATA"
+          },
+          "gsi1pk": {
+            "S": "CATEGORY#3"
+          },
+          "gsi1sk": {
+            "S": "PROBLEM#213"
+          },
+          "id": {
+            "N": "213"
+          },
+          "category_id": {
+            "N": "3"
+          },
+          "question": {
+            "S": "sinθ + cosθ = √2/2 (0°<θ<180°) のとき sin³θ + cos³θ の値を求めよ"
+          },
+          "hint": {
+            "S": "a³ + b³ = (a + b)(a² − ab + b²) を使いましょう！"
+          }
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "pk": {
+            "S": "PROBLEM#214"
+          },
+          "sk": {
+            "S": "#METADATA"
+          },
+          "gsi1pk": {
+            "S": "CATEGORY#3"
+          },
+          "gsi1sk": {
+            "S": "PROBLEM#214"
+          },
+          "id": {
+            "N": "214"
+          },
+          "category_id": {
+            "N": "3"
+          },
+          "question": {
+            "S": "0°≤θ≤180° のとき 2sin²θ − cosθ − 1 ≤ 0 の不等式を解け"
+          },
+          "hint": {
+            "S": "sin²θ = 1−cos²θ に代えて cosθ の不等式にしましょう！"
+          }
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "pk": {
+            "S": "PROBLEM#215"
+          },
+          "sk": {
+            "S": "#METADATA"
+          },
+          "gsi1pk": {
+            "S": "CATEGORY#4"
+          },
+          "gsi1sk": {
+            "S": "PROBLEM#215"
+          },
+          "id": {
+            "N": "215"
+          },
+          "category_id": {
+            "N": "4"
+          },
+          "question": {
+            "S": "次のデータ {5,7,4,3,6} における分散を求めよ"
+          },
+          "hint": {
+            "S": "分散 = x² の平均 − (x の平均)² の公式を使いましょう！"
+          }
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "pk": {
+            "S": "PROBLEM#216"
+          },
+          "sk": {
+            "S": "#METADATA"
+          },
+          "gsi1pk": {
+            "S": "CATEGORY#4"
+          },
+          "gsi1sk": {
+            "S": "PROBLEM#216"
+          },
+          "id": {
+            "N": "216"
+          },
+          "category_id": {
+            "N": "4"
+          },
+          "question": {
+            "S": "次のデータ {5,4,8,12,17,24,27,28,22,30,9,6} で 30 が 18 だったとき、平均は修正前よりいくつ減少するか"
+          },
+          "hint": {
+            "S": "平均値 = 総和 ÷ データ数 で計算しましょう！"
+          }
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "pk": {
+            "S": "PROBLEM#217"
+          },
+          "sk": {
+            "S": "#METADATA"
+          },
+          "gsi1pk": {
+            "S": "CATEGORY#4"
+          },
+          "gsi1sk": {
+            "S": "PROBLEM#217"
+          },
+          "id": {
+            "N": "217"
+          },
+          "category_id": {
+            "N": "4"
+          },
+          "question": {
+            "S": "50点満点のテスト A,B を行った結果の得点<br><br><table border=\"1\"><tr><th>生徒</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th><th>9</th><th>10</th></tr><tr><td>x</td><td>43</td><td>41</td><td>43</td><td>38</td><td>39</td><td>42</td><td>42</td><td>39</td><td>41</td><td>42</td></tr><tr><td>y</td><td>49</td><td>42</td><td>44</td><td>36</td><td>40</td><td>44</td><td>45</td><td>42</td><td>42</td><td>46</td></tr></table><br>このとき相関係数 r を小数第3位で四捨五入して求めよ"
+          },
+          "hint": {
+            "S": "相関係数の公式を用いて計算しましょう！"
+          }
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "pk": {
+            "S": "PROBLEM#218"
+          },
+          "sk": {
+            "S": "#METADATA"
+          },
+          "gsi1pk": {
+            "S": "CATEGORY#4"
+          },
+          "gsi1sk": {
+            "S": "PROBLEM#218"
+          },
+          "id": {
+            "N": "218"
+          },
+          "category_id": {
+            "N": "4"
+          },
+          "question": {
+            "S": "次のデータ {5,4,8,12,17,24,27,28,22,30,9,6} で 6→10, 30→26 に修正したとき、分散は修正前よりどうなるか"
+          },
+          "hint": {
+            "S": "平均値を求め、修正した 2 つの数だけで偏差平方和を比べましょう！"
+          }
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "pk": {
+            "S": "PROBLEM#219"
+          },
+          "sk": {
+            "S": "#METADATA"
+          },
+          "gsi1pk": {
+            "S": "CATEGORY#4"
+          },
+          "gsi1sk": {
+            "S": "PROBLEM#219"
+          },
+          "id": {
+            "N": "219"
+          },
+          "category_id": {
+            "N": "4"
+          },
+          "question": {
+            "S": "あるクラスのテスト平均が 54.3 点で、得点が 69,65,62,57,55,55,53,48,42,x のとき x の値を求めよ"
+          },
+          "hint": {
+            "S": "x を用いて (既存の合計 + x) ÷ 10 = 54.3 の式を立てましょう！"
+          }
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "pk": {
+            "S": "PROBLEM#220"
+          },
+          "sk": {
+            "S": "#METADATA"
+          },
+          "gsi1pk": {
+            "S": "CATEGORY#4"
+          },
+          "gsi1sk": {
+            "S": "PROBLEM#220"
+          },
+          "id": {
+            "N": "220"
+          },
+          "category_id": {
+            "N": "4"
+          },
+          "question": {
+            "S": "30点満点のテスト A,B を行った結果の得点<br><br><table border=\"1\"><tr><th>生徒</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th><th>9</th><th>10</th></tr><tr><td>x</td><td>29</td><td>25</td><td>22</td><td>28</td><td>18</td><td>23</td><td>26</td><td>30</td><td>30</td><td>29</td></tr><tr><td>y</td><td>23</td><td>23</td><td>18</td><td>26</td><td>17</td><td>20</td><td>21</td><td>20</td><td>26</td><td>26</td></tr></table><br>このとき相関係数 r を小数第3位で四捨五入して求めよ"
+          },
+          "hint": {
+            "S": "相関係数の公式を用いて計算しましょう！"
+          }
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "pk": {
+            "S": "PROBLEM#221"
+          },
+          "sk": {
+            "S": "#METADATA"
+          },
+          "gsi1pk": {
+            "S": "CATEGORY#5"
+          },
+          "gsi1sk": {
+            "S": "PROBLEM#221"
+          },
+          "id": {
+            "N": "221"
+          },
+          "category_id": {
+            "N": "5"
+          },
+          "question": {
+            "S": "大、中、小 3 個のサイコロを投げるとき、目の積が 4 の倍数になる場合は何通りか"
+          },
+          "hint": {
+            "S": "(全体) – (積が4の倍数でない場合) で考えましょう！"
+          }
+        }
+      }
+    }
+  ]
+}

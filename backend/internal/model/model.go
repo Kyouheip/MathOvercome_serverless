@@ -6,62 +6,52 @@ import (
 )
 
 func init() {
-	// gin-contrib/sessions の cookie store は gob でシリアライズするため
-	// セッションに保存する型を事前登録する必要がある
 	gob.Register(&User{})
 	gob.Register(uint64(0))
 }
 
 type User struct {
-	ID           uint64 `gorm:"primaryKey"`
-	UserName     string
-	UserID       string        `gorm:"unique"`
-	Password     string        `json:"-"`
-	TestSessions []TestSession `json:",omitempty"`
+	ID       uint64
+	UserName string
+	UserID   string
+	Password string `json:"-"`
 }
 
 type Category struct {
-	ID   uint64 `gorm:"primaryKey"`
+	ID   uint64
 	Name string
 }
 
 type Problem struct {
-	ID         uint64 `gorm:"primaryKey"`
+	ID         uint64
 	CategoryID int
-	Question   string   `gorm:"type:text"`
+	Question   string
 	Hint       string
 	Choices    []Choice `json:",omitempty"`
 }
 
 type Choice struct {
-	ID         uint64 `gorm:"primaryKey"`
+	ID         uint64
 	ProblemID  uint64
-	Problem    Problem `json:"-"`
 	ChoiceText string
 	IsCorrect  bool
 }
 
 type TestSession struct {
-	ID              uint64    `gorm:"primaryKey"`
+	ID              uint64
 	UserID          uint64
-	User            User      `json:"-"`
 	IncludeIntegers bool
-	StartTime       time.Time        `gorm:"default:CURRENT_TIMESTAMP"`
+	StartTime       time.Time
 	SessionProblems []SessionProblem `json:",omitempty"`
 }
 
 type SessionProblem struct {
-	ID               uint64      `gorm:"primaryKey"`
-	TestSessionID    uint64      `gorm:"column:session_id"`
-	TestSession      TestSession `json:"-"`
+	ID               uint64
+	TestSessionID    uint64
 	ProblemID        uint64
 	Problem          Problem
-	SelectedChoiceID *uint64 `gorm:"column:selected_choice_id"`
-	SelectedChoice   *Choice
+	SelectedChoiceID *uint64
 	IsCorrect        *bool
-}
-
-// Java 側の DB テーブル名に合わせる (GORM デフォルトだと session_problems になる)
-func (SessionProblem) TableName() string {
-	return "sessionproblems"
+	CategoryName     string
+	CategoryID       int
 }

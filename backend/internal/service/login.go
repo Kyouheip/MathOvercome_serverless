@@ -3,6 +3,8 @@ package service
 import (
 	"fmt"
 
+	"golang.org/x/crypto/bcrypt"
+
 	"github.com/Kyouheip/MathOvercome_serverless/internal/apperr"
 	"github.com/Kyouheip/MathOvercome_serverless/internal/dto"
 	"github.com/Kyouheip/MathOvercome_serverless/internal/model"
@@ -23,7 +25,7 @@ func (s *LoginService) Authenticate(req dto.LoginRequest) (*model.User, error) {
 		return nil, fmt.Errorf("authenticate: %w", apperr.ErrInvalidCredentials)
 	}
 
-	if user.Password != req.Password {
+	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(req.Password)); err != nil {
 		return nil, fmt.Errorf("authenticate: %w", apperr.ErrInvalidCredentials)
 	}
 
@@ -44,10 +46,14 @@ func (s *LoginService) ValidateRegister(req dto.RegisterRequest) error {
 }
 
 func (s *LoginService) CreateUser(req dto.RegisterRequest) error {
+	hashed, err := bcrypt.GenerateFromPassword([]byte(req.Password1), bcrypt.DefaultCost)
+	if err != nil {
+		return fmt.Errorf("create user: %w", err)
+	}
 	user := model.User{
 		UserName: req.UserName,
 		UserID:   req.UserID,
-		Password: req.Password1,
+		Password: string(hashed),
 	}
 	if err := s.repo.SaveUser(&user); err != nil {
 		return fmt.Errorf("create user: %w", err)

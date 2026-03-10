@@ -1,0 +1,514 @@
+{
+  "MathOvercome": [
+    {
+      "PutRequest": {
+        "Item": {
+          "pk": {
+            "S": "PROBLEM#222"
+          },
+          "sk": {
+            "S": "#METADATA"
+          },
+          "gsi1pk": {
+            "S": "CATEGORY#5"
+          },
+          "gsi1sk": {
+            "S": "PROBLEM#222"
+          },
+          "id": {
+            "N": "222"
+          },
+          "category_id": {
+            "N": "5"
+          },
+          "question": {
+            "S": "5 人に招待状を送るため、宛名を書いた招待状と封筒を作成した。招待状を全部無作為に封筒に入れたとき、誰も自分の封筒に入らない場合は何通りか"
+          },
+          "hint": {
+            "S": "1～5 の並びで、k 番目が k にならない並べ方を数えましょう！"
+          }
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "pk": {
+            "S": "PROBLEM#223"
+          },
+          "sk": {
+            "S": "#METADATA"
+          },
+          "gsi1pk": {
+            "S": "CATEGORY#5"
+          },
+          "gsi1sk": {
+            "S": "PROBLEM#223"
+          },
+          "id": {
+            "N": "223"
+          },
+          "category_id": {
+            "N": "5"
+          },
+          "question": {
+            "S": "x + y + z = 9, x≥0, y≥0, z≥0 を満たす整数の組は何通りか"
+          },
+          "hint": {
+            "S": "9 個の○と 2 本の仕切りを置く方法を考えましょう！"
+          }
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "pk": {
+            "S": "PROBLEM#224"
+          },
+          "sk": {
+            "S": "#METADATA"
+          },
+          "gsi1pk": {
+            "S": "CATEGORY#5"
+          },
+          "gsi1sk": {
+            "S": "PROBLEM#224"
+          },
+          "id": {
+            "N": "224"
+          },
+          "category_id": {
+            "N": "5"
+          },
+          "question": {
+            "S": "赤、青、黄の札がそれぞれ 4 枚ずつあり、各札に 1～4 の番号が書かれている。12 枚の札から 3 枚取り出すとき、番号がすべて異なる確率を求めよ"
+          },
+          "hint": {
+            "S": "番号を選ぶ方法 × 色を選ぶ方法 で考えましょう！"
+          }
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "pk": {
+            "S": "PROBLEM#225"
+          },
+          "sk": {
+            "S": "#METADATA"
+          },
+          "gsi1pk": {
+            "S": "CATEGORY#5"
+          },
+          "gsi1sk": {
+            "S": "PROBLEM#225"
+          },
+          "id": {
+            "N": "225"
+          },
+          "category_id": {
+            "N": "5"
+          },
+          "question": {
+            "S": "袋の中に赤球2個、白球3個がある。A,B が交互に1個ずつ取り出し、2 個目の赤球を取った方が勝ちとする。取り出した球は戻さない。B が勝つ確率を求めよ"
+          },
+          "hint": {
+            "S": "B が勝つパターンを全部書き、確率を足しましょう！"
+          }
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "pk": {
+            "S": "PROBLEM#226"
+          },
+          "sk": {
+            "S": "#METADATA"
+          },
+          "gsi1pk": {
+            "S": "CATEGORY#5"
+          },
+          "gsi1sk": {
+            "S": "PROBLEM#226"
+          },
+          "id": {
+            "N": "226"
+          },
+          "category_id": {
+            "N": "5"
+          },
+          "question": {
+            "S": "工場では製品を機械A(不良4%)とその他(不良7%)で作る。全体の60%をA製とするとき、不良品だったものがA製である確率を求めよ"
+          },
+          "hint": {
+            "S": "条件付き確率：(Aの不良率×Aの割合)÷全体の不良率 で求めましょう！"
+          }
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "pk": {
+            "S": "PROBLEM#227"
+          },
+          "sk": {
+            "S": "#METADATA"
+          },
+          "gsi1pk": {
+            "S": "CATEGORY#6"
+          },
+          "gsi1sk": {
+            "S": "PROBLEM#227"
+          },
+          "id": {
+            "N": "227"
+          },
+          "category_id": {
+            "N": "6"
+          },
+          "question": {
+            "S": "AB=7, BC=5, CA=3 の△ABCにおいて、角Aおよびその外角の二等分線が辺BCまたはその延長と交わる点をそれぞれD,Eとする。線分DEの長さを求めよ"
+          },
+          "hint": {
+            "S": "内角・外角の二等分線の定理を使いましょう！"
+          }
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "pk": {
+            "S": "PROBLEM#228"
+          },
+          "sk": {
+            "S": "#METADATA"
+          },
+          "gsi1pk": {
+            "S": "CATEGORY#6"
+          },
+          "gsi1sk": {
+            "S": "PROBLEM#228"
+          },
+          "id": {
+            "N": "228"
+          },
+          "category_id": {
+            "N": "6"
+          },
+          "question": {
+            "S": "右図の△ABCで、D,Eはそれぞれ辺BC,CAの中点。ADとBEの交点をF、AFの中点をG、CGとBEの交点をHとする。BE=9のとき△EBCと△FBDの面積比を求めよ"
+          },
+          "hint": {
+            "S": "高さが共通なので底辺の長さ比で面積比を求めましょう！"
+          }
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "pk": {
+            "S": "PROBLEM#229"
+          },
+          "sk": {
+            "S": "#METADATA"
+          },
+          "gsi1pk": {
+            "S": "CATEGORY#6"
+          },
+          "gsi1sk": {
+            "S": "PROBLEM#229"
+          },
+          "id": {
+            "N": "229"
+          },
+          "category_id": {
+            "N": "6"
+          },
+          "question": {
+            "S": "△ABCの辺BC,CA,ABを3:2に内分する点をそれぞれD,E,Fとする。△ABCと△DEFの面積の比を求めよ"
+          },
+          "hint": {
+            "S": "内分比から相似比を考えましょう！"
+          }
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "pk": {
+            "S": "PROBLEM#230"
+          },
+          "sk": {
+            "S": "#METADATA"
+          },
+          "gsi1pk": {
+            "S": "CATEGORY#6"
+          },
+          "gsi1sk": {
+            "S": "PROBLEM#230"
+          },
+          "id": {
+            "N": "230"
+          },
+          "category_id": {
+            "N": "6"
+          },
+          "question": {
+            "S": "1辺の長さが7の正三角形ABCがある。AB上にAD=3、AC上にAE=6となるようにD,Eをとる。このときBE,CDの交点をF、直線AFとBCの交点をGとするとき線分CGの長さを求めよ"
+          },
+          "hint": {
+            "S": "チェバの定理を使いましょう！"
+          }
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "pk": {
+            "S": "PROBLEM#231"
+          },
+          "sk": {
+            "S": "#METADATA"
+          },
+          "gsi1pk": {
+            "S": "CATEGORY#6"
+          },
+          "gsi1sk": {
+            "S": "PROBLEM#231"
+          },
+          "id": {
+            "N": "231"
+          },
+          "category_id": {
+            "N": "6"
+          },
+          "question": {
+            "S": "△ABCにおいて、辺AB上と辺ACの延長上にE,FをとりAE:EB=1:2, AF:FC=3:1とする。直線EFと直線BCの交点をDとするときBD:DCを求めよ"
+          },
+          "hint": {
+            "S": "メネラウスの定理を利用しましょう！"
+          }
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "pk": {
+            "S": "PROBLEM#232"
+          },
+          "sk": {
+            "S": "#METADATA"
+          },
+          "gsi1pk": {
+            "S": "CATEGORY#6"
+          },
+          "gsi1sk": {
+            "S": "PROBLEM#232"
+          },
+          "id": {
+            "N": "232"
+          },
+          "category_id": {
+            "N": "6"
+          },
+          "question": {
+            "S": "面積が1の△ABCにおいて、辺BC,CA,ABを2:1に内分する点をそれぞれL,M,Nとし、ALとBM, BMとCN, CNとALの交点をそれぞれP,Q,Rとするとき△PQRの面積を求めよ"
+          },
+          "hint": {
+            "S": "メネラウスの定理でAP:PR:RLを求めましょう！"
+          }
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "pk": {
+            "S": "PROBLEM#233"
+          },
+          "sk": {
+            "S": "#METADATA"
+          },
+          "gsi1pk": {
+            "S": "CATEGORY#7"
+          },
+          "gsi1sk": {
+            "S": "PROBLEM#233"
+          },
+          "id": {
+            "N": "233"
+          },
+          "category_id": {
+            "N": "7"
+          },
+          "question": {
+            "S": "√(63n/40) が有理数となる最小の自然数 n を求めよ"
+          },
+          "hint": {
+            "S": "素因数分解して √ が外れる条件を考えましょう！"
+          }
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "pk": {
+            "S": "PROBLEM#234"
+          },
+          "sk": {
+            "S": "#METADATA"
+          },
+          "gsi1pk": {
+            "S": "CATEGORY#7"
+          },
+          "gsi1sk": {
+            "S": "PROBLEM#234"
+          },
+          "id": {
+            "N": "234"
+          },
+          "category_id": {
+            "N": "7"
+          },
+          "question": {
+            "S": "√(n²+15) が自然数となる自然数 n をすべて求めよ"
+          },
+          "hint": {
+            "S": "√(n²+15)=m とおいて、両辺を2乗して考えましょう！"
+          }
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "pk": {
+            "S": "PROBLEM#235"
+          },
+          "sk": {
+            "S": "#METADATA"
+          },
+          "gsi1pk": {
+            "S": "CATEGORY#7"
+          },
+          "gsi1sk": {
+            "S": "PROBLEM#235"
+          },
+          "id": {
+            "N": "235"
+          },
+          "category_id": {
+            "N": "7"
+          },
+          "question": {
+            "S": "25! を計算すると末尾には 0 が何個連続して並ぶか求めよ"
+          },
+          "hint": {
+            "S": "25 ÷ 5 ＋ 25 ÷ 25 で 5 の個数を数えましょう！"
+          }
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "pk": {
+            "S": "PROBLEM#236"
+          },
+          "sk": {
+            "S": "#METADATA"
+          },
+          "gsi1pk": {
+            "S": "CATEGORY#7"
+          },
+          "gsi1sk": {
+            "S": "PROBLEM#236"
+          },
+          "id": {
+            "N": "236"
+          },
+          "category_id": {
+            "N": "7"
+          },
+          "question": {
+            "S": "整数 a を 7 で割ると 3 余るとき、a¹⁰⁰⁰ を 7 で割ったときの余りを求めよ"
+          },
+          "hint": {
+            "S": "3 を何回か掛けていくと、余りに繰り返しのパターンがあることに気づきます。その性質を利用しましょう！"
+          }
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "pk": {
+            "S": "PROBLEM#237"
+          },
+          "sk": {
+            "S": "#METADATA"
+          },
+          "gsi1pk": {
+            "S": "CATEGORY#7"
+          },
+          "gsi1sk": {
+            "S": "PROBLEM#237"
+          },
+          "id": {
+            "N": "237"
+          },
+          "category_id": {
+            "N": "7"
+          },
+          "question": {
+            "S": "7n+4 と 8n+5 が互いに素になるような 100 以下の自然数 n は何個あるか"
+          },
+          "hint": {
+            "S": "8n+5 − (7n+4) = n+1 に注目して、その数が 1 以外の約数を持たない n を探してみましょう！"
+          }
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "pk": {
+            "S": "PROBLEM#238"
+          },
+          "sk": {
+            "S": "#METADATA"
+          },
+          "gsi1pk": {
+            "S": "CATEGORY#7"
+          },
+          "gsi1sk": {
+            "S": "PROBLEM#238"
+          },
+          "id": {
+            "N": "238"
+          },
+          "category_id": {
+            "N": "7"
+          },
+          "question": {
+            "S": "3 で割ると 2 余り、5 で割ると 3 余り、7 で割ると 4 余る自然数 n の最小値を求めよ"
+          },
+          "hint": {
+            "S": "「3 で割ると 2 余る数」「5 で割ると 3 余る数」などを順に調べて、すべての条件を満たす数を探してみましょう！"
+          }
+        }
+      }
+    }
+  ]
+}
