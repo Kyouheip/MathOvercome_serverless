@@ -6,6 +6,12 @@ set -e
 ENDPOINT="http://dynamodb:8000"
 DATA_DIR="/dynamodb/data"
 
+echo "Checking table: MathOvercome..."
+if aws dynamodb describe-table --endpoint-url "$ENDPOINT" --table-name MathOvercome --region ap-northeast-1 > /dev/null 2>&1; then
+  echo "Table already exists, skipping creation and data upload."
+  exit 0
+fi
+
 echo "Creating table: MathOvercome..."
 aws dynamodb create-table \
   --endpoint-url "$ENDPOINT" \

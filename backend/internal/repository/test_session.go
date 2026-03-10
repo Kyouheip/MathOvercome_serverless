@@ -18,7 +18,7 @@ type dynamoSession struct {
 	GSI1PK          string `dynamodbav:"gsi1pk"`
 	GSI1SK          string `dynamodbav:"gsi1sk"`
 	ID              uint64 `dynamodbav:"id"`
-	UserID          uint64 `dynamodbav:"user_id"`
+	OwnerID         uint64 `dynamodbav:"owner_id"`
 	IncludeIntegers bool   `dynamodbav:"include_integers"`
 	StartTime       string `dynamodbav:"start_time"`
 }
@@ -46,7 +46,7 @@ func (r *Repository) FindTestSessionByID(id uint64) (*model.TestSession, error) 
 	startTime, _ := time.Parse("2006-01-02 15:04:05", ds.StartTime)
 	return &model.TestSession{
 		ID:              ds.ID,
-		UserID:          ds.UserID,
+		UserID:          ds.OwnerID,
 		IncludeIntegers: ds.IncludeIntegers,
 		StartTime:       startTime,
 	}, nil
@@ -62,7 +62,7 @@ func (r *Repository) SaveTestSession(session *model.TestSession) error {
 		GSI1PK:          fmt.Sprintf("USER#%d", session.UserID),
 		GSI1SK:          fmt.Sprintf("SESSION#%d", session.ID),
 		ID:              session.ID,
-		UserID:          session.UserID,
+		OwnerID:         session.UserID,
 		IncludeIntegers: session.IncludeIntegers,
 		StartTime:       session.StartTime.Format("2006-01-02 15:04:05"),
 	}

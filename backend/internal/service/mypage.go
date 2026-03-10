@@ -46,7 +46,7 @@ func (s *MypageService) GetUserData(user *model.User) (*dto.User, error) {
 		)
 	}
 
-	var finalSessions []dto.TestSession
+	finalSessions := make([]dto.TestSession, 0)
 	for _, id := range sessionIDs {
 		sess := sessionMap[id]
 
