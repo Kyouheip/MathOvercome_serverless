@@ -4,7 +4,9 @@ services:
     container_name: mathovercome-dynamodb
     ports:
       - "8000:8000"
-    command: ["-jar", "DynamoDBLocal.jar", "-sharedDb"]
+    command: ["-jar", "DynamoDBLocal.jar", "-sharedDb", "-dbPath", "/data"]
+    volumes:
+      - dynamodb-data:/data
     healthcheck:
       test: ["CMD-SHELL", "curl -s http://localhost:8000 -o /dev/null"]
       interval: 5s
@@ -56,3 +58,6 @@ services:
       - "3000:3000"
     depends_on:
       - backend
+
+volumes:
+  dynamodb-data:
