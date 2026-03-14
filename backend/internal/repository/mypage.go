@@ -145,7 +145,7 @@ func (r *Repository) GetWeakCategories(sessionID uint64) ([]string, error) {
 		return weaks[i].rate < weaks[j].rate
 	})
 
-	var names []string
+	names := []string{}
 	for i := 0; i < len(weaks) && i < 2; i++ {
 		names = append(names, weaks[i].name)
 	}

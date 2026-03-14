@@ -2,6 +2,7 @@ package service
 
 import (
 	"fmt"
+	"sort"
 	"time"
 
 	"github.com/Kyouheip/MathOvercome_serverless/internal/dto"
@@ -80,6 +81,10 @@ func (s *MypageService) GetUserData(user *model.User) (*dto.User, error) {
 
 		finalSessions = append(finalSessions, *sess)
 	}
+
+	sort.Slice(finalSessions, func(i, j int) bool {
+		return finalSessions[i].StartTime > finalSessions[j].StartTime
+	})
 
 	return &dto.User{
 		UserName:     user.UserName,

@@ -58,8 +58,7 @@ for f in \
   choices_01.json choices_02.json choices_03.json choices_04.json choices_05.json choices_06.json choices_07.json \
   users.json \
   test_sessions.json \
-  session_problems_01.json session_problems_02.json session_problems_03.json \
-  session_problems_04.json session_problems_05.json session_problems_06.json; do
+  session_problems.json; do
   echo "  $f"
   aws dynamodb batch-write-item \
     --endpoint-url "$ENDPOINT" \

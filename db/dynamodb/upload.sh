@@ -36,12 +36,7 @@ upload users.json
 # テストセッション
 upload test_sessions.json
 
-# セッション問題 (134件)
-upload session_problems_01.json
-upload session_problems_02.json
-upload session_problems_03.json
-upload session_problems_04.json
-upload session_problems_05.json
-upload session_problems_06.json
+# セッション問題 (24件)
+upload session_problems.json
 
 echo "All data uploaded."

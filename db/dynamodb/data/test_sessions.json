@@ -4,28 +4,28 @@
       "PutRequest": {
         "Item": {
           "pk": {
-            "S": "SESSION#143"
+            "S": "SESSION#1"
           },
           "sk": {
             "S": "#METADATA"
           },
           "gsi1pk": {
-            "S": "USER#2"
+            "S": "USER#1"
           },
           "gsi1sk": {
-            "S": "SESSION#143"
+            "S": "SESSION#1"
           },
           "id": {
-            "N": "143"
+            "N": "1"
           },
           "include_integers": {
             "BOOL": false
           },
           "start_time": {
-            "S": "2025-05-15 11:39:21"
+            "S": "2025-10-01 10:00:00"
           },
           "owner_id": {
-            "N": "2"
+            "N": "1"
           }
         }
       }
@@ -34,235 +34,55 @@
       "PutRequest": {
         "Item": {
           "pk": {
-            "S": "SESSION#144"
+            "S": "SESSION#2"
           },
           "sk": {
             "S": "#METADATA"
           },
           "gsi1pk": {
-            "S": "USER#2"
+            "S": "USER#1"
           },
           "gsi1sk": {
-            "S": "SESSION#144"
+            "S": "SESSION#2"
           },
           "id": {
-            "N": "144"
-          },
-          "include_integers": {
-            "BOOL": false
-          },
-          "start_time": {
-            "S": "2025-05-15 11:44:02"
-          },
-          "owner_id": {
             "N": "2"
-          }
-        }
-      }
-    },
-    {
-      "PutRequest": {
-        "Item": {
-          "pk": {
-            "S": "SESSION#145"
-          },
-          "sk": {
-            "S": "#METADATA"
-          },
-          "gsi1pk": {
-            "S": "USER#2"
-          },
-          "gsi1sk": {
-            "S": "SESSION#145"
-          },
-          "id": {
-            "N": "145"
-          },
-          "include_integers": {
-            "BOOL": false
-          },
-          "start_time": {
-            "S": "2025-05-15 13:49:38"
-          },
-          "owner_id": {
-            "N": "2"
-          }
-        }
-      }
-    },
-    {
-      "PutRequest": {
-        "Item": {
-          "pk": {
-            "S": "SESSION#146"
-          },
-          "sk": {
-            "S": "#METADATA"
-          },
-          "gsi1pk": {
-            "S": "USER#2"
-          },
-          "gsi1sk": {
-            "S": "SESSION#146"
-          },
-          "id": {
-            "N": "146"
-          },
-          "include_integers": {
-            "BOOL": false
-          },
-          "start_time": {
-            "S": "2025-05-15 13:49:46"
-          },
-          "owner_id": {
-            "N": "2"
-          }
-        }
-      }
-    },
-    {
-      "PutRequest": {
-        "Item": {
-          "pk": {
-            "S": "SESSION#147"
-          },
-          "sk": {
-            "S": "#METADATA"
-          },
-          "gsi1pk": {
-            "S": "USER#2"
-          },
-          "gsi1sk": {
-            "S": "SESSION#147"
-          },
-          "id": {
-            "N": "147"
-          },
-          "include_integers": {
-            "BOOL": false
-          },
-          "start_time": {
-            "S": "2025-05-15 13:58:01"
-          },
-          "owner_id": {
-            "N": "2"
-          }
-        }
-      }
-    },
-    {
-      "PutRequest": {
-        "Item": {
-          "pk": {
-            "S": "SESSION#148"
-          },
-          "sk": {
-            "S": "#METADATA"
-          },
-          "gsi1pk": {
-            "S": "USER#2"
-          },
-          "gsi1sk": {
-            "S": "SESSION#148"
-          },
-          "id": {
-            "N": "148"
-          },
-          "include_integers": {
-            "BOOL": false
-          },
-          "start_time": {
-            "S": "2025-05-15 15:17:01"
-          },
-          "owner_id": {
-            "N": "2"
-          }
-        }
-      }
-    },
-    {
-      "PutRequest": {
-        "Item": {
-          "pk": {
-            "S": "SESSION#149"
-          },
-          "sk": {
-            "S": "#METADATA"
-          },
-          "gsi1pk": {
-            "S": "USER#2"
-          },
-          "gsi1sk": {
-            "S": "SESSION#149"
-          },
-          "id": {
-            "N": "149"
-          },
-          "include_integers": {
-            "BOOL": false
-          },
-          "start_time": {
-            "S": "2025-05-15 20:48:38"
-          },
-          "owner_id": {
-            "N": "2"
-          }
-        }
-      }
-    },
-    {
-      "PutRequest": {
-        "Item": {
-          "pk": {
-            "S": "SESSION#150"
-          },
-          "sk": {
-            "S": "#METADATA"
-          },
-          "gsi1pk": {
-            "S": "USER#2"
-          },
-          "gsi1sk": {
-            "S": "SESSION#150"
-          },
-          "id": {
-            "N": "150"
-          },
-          "include_integers": {
-            "BOOL": false
-          },
-          "start_time": {
-            "S": "2025-05-17 06:46:58"
-          },
-          "owner_id": {
-            "N": "2"
-          }
-        }
-      }
-    },
-    {
-      "PutRequest": {
-        "Item": {
-          "pk": {
-            "S": "SESSION#151"
-          },
-          "sk": {
-            "S": "#METADATA"
-          },
-          "gsi1pk": {
-            "S": "USER#2"
-          },
-          "gsi1sk": {
-            "S": "SESSION#151"
-          },
-          "id": {
-            "N": "151"
           },
           "include_integers": {
             "BOOL": true
           },
           "start_time": {
-            "S": "2025-05-22 06:44:10"
+            "S": "2025-10-05 14:30:00"
+          },
+          "owner_id": {
+            "N": "1"
+          }
+        }
+      }
+    },
+    {
+      "PutRequest": {
+        "Item": {
+          "pk": {
+            "S": "SESSION#3"
+          },
+          "sk": {
+            "S": "#METADATA"
+          },
+          "gsi1pk": {
+            "S": "USER#2"
+          },
+          "gsi1sk": {
+            "S": "SESSION#3"
+          },
+          "id": {
+            "N": "3"
+          },
+          "include_integers": {
+            "BOOL": false
+          },
+          "start_time": {
+            "S": "2025-10-10 09:15:00"
           },
           "owner_id": {
             "N": "2"
@@ -274,7 +94,7 @@
       "PutRequest": {
         "Item": {
           "pk": {
-            "S": "SESSION#152"
+            "S": "SESSION#4"
           },
           "sk": {
             "S": "#METADATA"
@@ -283,46 +103,16 @@
             "S": "USER#2"
           },
           "gsi1sk": {
-            "S": "SESSION#152"
+            "S": "SESSION#4"
           },
           "id": {
-            "N": "152"
+            "N": "4"
           },
           "include_integers": {
             "BOOL": false
           },
           "start_time": {
-            "S": "2025-05-22 11:16:03"
-          },
-          "owner_id": {
-            "N": "2"
-          }
-        }
-      }
-    },
-    {
-      "PutRequest": {
-        "Item": {
-          "pk": {
-            "S": "SESSION#153"
-          },
-          "sk": {
-            "S": "#METADATA"
-          },
-          "gsi1pk": {
-            "S": "USER#2"
-          },
-          "gsi1sk": {
-            "S": "SESSION#153"
-          },
-          "id": {
-            "N": "153"
-          },
-          "include_integers": {
-            "BOOL": false
-          },
-          "start_time": {
-            "S": "2025-06-09 19:01:13"
+            "S": "2025-10-15 19:00:00"
           },
           "owner_id": {
             "N": "2"
