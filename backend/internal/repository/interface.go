@@ -24,7 +24,6 @@ type MypageRepo interface {
 
 // SessionRepo は SessionHandler が直接使うリポジトリ操作を定義する。
 type SessionRepo interface {
-	FindTestSessionByID(id uint64) (*model.TestSession, error)
 	CountSessionProblems(sessionID uint64) (int64, error)
 	FindSessionProblemByIdx(sessionID uint64, idx int) (*model.SessionProblem, error)
 	FindSessionProblemsBySessionID(sessionID uint64) ([]model.SessionProblem, error)

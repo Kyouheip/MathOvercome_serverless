@@ -7,7 +7,6 @@ import (
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
-	"github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
 
 	"github.com/Kyouheip/MathOvercome_serverless/internal/model"
 )
@@ -21,35 +20,6 @@ type dynamoSession struct {
 	OwnerID         uint64 `dynamodbav:"owner_id"`
 	IncludeIntegers bool   `dynamodbav:"include_integers"`
 	StartTime       string `dynamodbav:"start_time"`
-}
-
-func (r *Repository) FindTestSessionByID(id uint64) (*model.TestSession, error) {
-	out, err := r.client.GetItem(bg(), &dynamodb.GetItemInput{
-		TableName: aws.String(tableName()),
-		Key: map[string]types.AttributeValue{
-			"pk": &types.AttributeValueMemberS{Value: fmt.Sprintf("SESSION#%d", id)},
-			"sk": &types.AttributeValueMemberS{Value: "#METADATA"},
-		},
-	})
-	if err != nil {
-		return nil, err
-	}
-	if out.Item == nil {
-		return nil, fmt.Errorf("session not found: %d", id)
-	}
-
-	var ds dynamoSession
-	if err := attributevalue.UnmarshalMap(out.Item, &ds); err != nil {
-		return nil, err
-	}
-
-	startTime, _ := time.Parse("2006-01-02 15:04:05", ds.StartTime)
-	return &model.TestSession{
-		ID:              ds.ID,
-		UserID:          ds.OwnerID,
-		IncludeIntegers: ds.IncludeIntegers,
-		StartTime:       startTime,
-	}, nil
 }
 
 func (r *Repository) SaveTestSession(session *model.TestSession) error {

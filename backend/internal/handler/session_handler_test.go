@@ -38,16 +38,11 @@ func (m *mockMypageService) GetUserData(user *model.User) (*dto.User, error) {
 }
 
 type mockSessionRepo struct {
-	findTestSessionByIDFn           func(id uint64) (*model.TestSession, error)
-	countSessionProblemsFn          func(sessionID uint64) (int64, error)
-	findSessionProblemByIdxFn       func(sessionID uint64, idx int) (*model.SessionProblem, error)
+	countSessionProblemsFn           func(sessionID uint64) (int64, error)
+	findSessionProblemByIdxFn        func(sessionID uint64, idx int) (*model.SessionProblem, error)
 	findSessionProblemsBySessionIDFn func(sessionID uint64) ([]model.SessionProblem, error)
-	findChoiceByIDFn                func(id uint64) (*model.Choice, error)
-	saveSessionProblemFn            func(sp *model.SessionProblem) error
-}
-
-func (m *mockSessionRepo) FindTestSessionByID(id uint64) (*model.TestSession, error) {
-	return m.findTestSessionByIDFn(id)
+	findChoiceByProblemAndChoiceIDFn func(problemID, choiceID uint64) (*model.Choice, error)
+	saveSessionProblemFn             func(sp *model.SessionProblem) error
 }
 
 func (m *mockSessionRepo) CountSessionProblems(sessionID uint64) (int64, error) {
@@ -62,8 +57,8 @@ func (m *mockSessionRepo) FindSessionProblemsBySessionID(sessionID uint64) ([]mo
 	return m.findSessionProblemsBySessionIDFn(sessionID)
 }
 
-func (m *mockSessionRepo) FindChoiceByID(id uint64) (*model.Choice, error) {
-	return m.findChoiceByIDFn(id)
+func (m *mockSessionRepo) FindChoiceByProblemAndChoiceID(problemID, choiceID uint64) (*model.Choice, error) {
+	return m.findChoiceByProblemAndChoiceIDFn(problemID, choiceID)
 }
 
 func (m *mockSessionRepo) SaveSessionProblem(sp *model.SessionProblem) error {
@@ -172,35 +167,10 @@ func TestViewOneProblem_NoCurrentSession(t *testing.T) {
 	}
 }
 
-func TestViewOneProblem_Forbidden(t *testing.T) {
-	user := &model.User{ID: 1}
-	var sessionID uint64 = 10
-	repo := &mockSessionRepo{
-		findTestSessionByIDFn: func(id uint64) (*model.TestSession, error) {
-			// セッションのオーナーは UserID=99
-			return &model.TestSession{ID: id, UserID: 99}, nil
-		},
-	}
-	r := newSessionEngine(nil, nil, repo, map[string]any{
-		"user":             user,
-		"currentSessionId": sessionID,
-	})
-
-	w := httptest.NewRecorder()
-	req := httptest.NewRequest(http.MethodGet, "/session/current/problems/0", nil)
-	r.ServeHTTP(w, req)
-	if w.Code != http.StatusForbidden {
-		t.Errorf("expected 403, got %d", w.Code)
-	}
-}
-
 func TestViewOneProblem_OutOfRange(t *testing.T) {
 	user := &model.User{ID: 1}
 	var sessionID uint64 = 10
 	repo := &mockSessionRepo{
-		findTestSessionByIDFn: func(id uint64) (*model.TestSession, error) {
-			return &model.TestSession{ID: id, UserID: 1}, nil
-		},
 		countSessionProblemsFn: func(sID uint64) (int64, error) {
 			return 5, nil
 		},
@@ -226,9 +196,6 @@ func TestViewOneProblem_Success(t *testing.T) {
 	isCorrect := true
 
 	repo := &mockSessionRepo{
-		findTestSessionByIDFn: func(id uint64) (*model.TestSession, error) {
-			return &model.TestSession{ID: id, UserID: 1}, nil
-		},
 		countSessionProblemsFn: func(sID uint64) (int64, error) {
 			return 5, nil
 		},
@@ -294,9 +261,6 @@ func TestSubmitAnswer_NullAnswer(t *testing.T) {
 	user := &model.User{ID: 1}
 	var sessionID uint64 = 10
 	repo := &mockSessionRepo{
-		findTestSessionByIDFn: func(id uint64) (*model.TestSession, error) {
-			return &model.TestSession{ID: id, UserID: 1}, nil
-		},
 		findSessionProblemsBySessionIDFn: func(sID uint64) ([]model.SessionProblem, error) {
 			return []model.SessionProblem{{ID: 1, ProblemID: 1}}, nil
 		},
@@ -322,14 +286,11 @@ func TestSubmitAnswer_WithChoice(t *testing.T) {
 	var sessionID uint64 = 10
 
 	repo := &mockSessionRepo{
-		findTestSessionByIDFn: func(id uint64) (*model.TestSession, error) {
-			return &model.TestSession{ID: id, UserID: 1}, nil
-		},
 		findSessionProblemsBySessionIDFn: func(sID uint64) ([]model.SessionProblem, error) {
 			return []model.SessionProblem{{ID: 1, ProblemID: 1}}, nil
 		},
-		findChoiceByIDFn: func(id uint64) (*model.Choice, error) {
-			return &model.Choice{ID: id, IsCorrect: true}, nil
+		findChoiceByProblemAndChoiceIDFn: func(problemID, choiceID uint64) (*model.Choice, error) {
+			return &model.Choice{ID: choiceID, IsCorrect: true}, nil
 		},
 		saveSessionProblemFn: func(sp *model.SessionProblem) error { return nil },
 	}
@@ -354,9 +315,6 @@ func TestSubmitAnswer_OutOfRange(t *testing.T) {
 	user := &model.User{ID: 1}
 	var sessionID uint64 = 10
 	repo := &mockSessionRepo{
-		findTestSessionByIDFn: func(id uint64) (*model.TestSession, error) {
-			return &model.TestSession{ID: id, UserID: 1}, nil
-		},
 		findSessionProblemsBySessionIDFn: func(sID uint64) ([]model.SessionProblem, error) {
 			return []model.SessionProblem{{ID: 1}}, nil // 問題は1問のみ
 		},

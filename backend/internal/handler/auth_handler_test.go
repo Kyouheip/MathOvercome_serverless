@@ -45,7 +45,6 @@ func newAuthEngine(svc service.LoginServicer) *gin.Engine {
 	store := cookie.NewStore([]byte("test-secret"))
 	r.Use(sessions.Sessions("session", store))
 	h := handler.NewAuthHandler(svc)
-	r.GET("/auth/ping", h.Ping)
 	r.POST("/auth/login", h.Login)
 	r.POST("/auth/logout", h.Logout)
 	r.POST("/auth/register", h.Register)
@@ -59,18 +58,6 @@ func jsonBody(t *testing.T, v any) *bytes.Reader {
 		t.Fatalf("json.Marshal: %v", err)
 	}
 	return bytes.NewReader(b)
-}
-
-// --- Ping ---
-
-func TestPing(t *testing.T) {
-	r := newAuthEngine(&mockLoginService{})
-	w := httptest.NewRecorder()
-	req := httptest.NewRequest(http.MethodGet, "/auth/ping", nil)
-	r.ServeHTTP(w, req)
-	if w.Code != http.StatusOK {
-		t.Errorf("expected 200, got %d", w.Code)
-	}
 }
 
 // --- Login ---

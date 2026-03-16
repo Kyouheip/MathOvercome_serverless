@@ -41,7 +41,6 @@ func New(client *dynamodb.Client, sessionSecret string) *gin.Engine {
 
 	auth := r.Group("/auth")
 	{
-		auth.GET("/ping", authHandler.Ping)
 		auth.POST("/login", authHandler.Login)
 		auth.POST("/logout", authHandler.Logout)
 		auth.POST("/register", authHandler.Register)

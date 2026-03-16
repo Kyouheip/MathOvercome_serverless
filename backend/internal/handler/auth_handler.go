@@ -23,11 +23,6 @@ func NewAuthHandler(s service.LoginServicer) *AuthHandler {
 	return &AuthHandler{loginService: s}
 }
 
-// GET /auth/ping
-func (h *AuthHandler) Ping(c *gin.Context) {
-	c.Status(http.StatusOK)
-}
-
 // POST /auth/login
 func (h *AuthHandler) Login(c *gin.Context) {
 	var req dto.LoginRequest

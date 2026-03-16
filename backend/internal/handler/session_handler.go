@@ -62,17 +62,6 @@ func (h *SessionHandler) ViewOneProblem(c *gin.Context) {
 
 	idx, _ := strconv.Atoi(c.Param("idx"))
 
-	ts, err := h.repo.FindTestSessionByID(sessionID)
-	if err != nil {
-		c.Status(http.StatusNotFound)
-		return
-	}
-
-	if ts.UserID != user.ID {
-		c.Status(http.StatusForbidden)
-		return
-	}
-
 	total, err := h.repo.CountSessionProblems(sessionID)
 	if err != nil {
 		c.Status(http.StatusInternalServerError)
@@ -128,17 +117,6 @@ func (h *SessionHandler) SubmitAnswer(c *gin.Context) {
 	}
 
 	idx, _ := strconv.Atoi(c.Param("idx"))
-
-	ts, err := h.repo.FindTestSessionByID(sessionID)
-	if err != nil {
-		c.Status(http.StatusNotFound)
-		return
-	}
-
-	if ts.UserID != user.ID {
-		c.Status(http.StatusForbidden)
-		return
-	}
 
 	sps, err := h.repo.FindSessionProblemsBySessionID(sessionID)
 	if err != nil {

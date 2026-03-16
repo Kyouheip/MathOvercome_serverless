@@ -1,21 +1,9 @@
 // src/app/page.js
 'use client'
-import { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 
 export default function HomePage() {
   const router = useRouter();
-
-  // バックエンドをウォームアップ（初回起動を早くする）
-  useEffect(() => {
-    const warmup = async () => {
-     try {
-        await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/ping`);
-     } catch (e) {}
-    };
-
-  warmup();
-}, []);
 
   const handleLogin = () => {
     router.push('/login');
