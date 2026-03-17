@@ -1,26 +1,26 @@
 package handler
 
 import (
+	"errors"
 	"net/http"
 	"strconv"
 
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 
+	"github.com/Kyouheip/MathOvercome_serverless/internal/apperr"
 	"github.com/Kyouheip/MathOvercome_serverless/internal/dto"
 	"github.com/Kyouheip/MathOvercome_serverless/internal/model"
-	"github.com/Kyouheip/MathOvercome_serverless/internal/repository"
 	"github.com/Kyouheip/MathOvercome_serverless/internal/service"
 )
 
 type SessionHandler struct {
 	testSessService service.TestSessionServicer
 	mypageService   service.MypageServicer
-	repo            repository.SessionRepo
 }
 
-func NewSessionHandler(ts service.TestSessionServicer, ms service.MypageServicer, r repository.SessionRepo) *SessionHandler {
-	return &SessionHandler{testSessService: ts, mypageService: ms, repo: r}
+func NewSessionHandler(ts service.TestSessionServicer, ms service.MypageServicer) *SessionHandler {
+	return &SessionHandler{testSessService: ts, mypageService: ms}
 }
 
 // POST /session/test
@@ -62,44 +62,20 @@ func (h *SessionHandler) ViewOneProblem(c *gin.Context) {
 
 	idx, _ := strconv.Atoi(c.Param("idx"))
 
-	total, err := h.repo.CountSessionProblems(sessionID)
+	problem, err := h.testSessService.GetProblem(sessionID, idx)
 	if err != nil {
-		c.Status(http.StatusInternalServerError)
-		return
-	}
-	if idx < 0 || idx >= int(total) {
-		c.Status(http.StatusBadRequest)
-		return
-	}
-
-	sp, err := h.repo.FindSessionProblemByIdx(sessionID, idx)
-	if err != nil {
-		c.Status(http.StatusNotFound)
+		switch {
+		case errors.Is(err, apperr.ErrOutOfRange):
+			c.Status(http.StatusBadRequest)
+		case errors.Is(err, apperr.ErrNotFound):
+			c.Status(http.StatusNotFound)
+		default:
+			c.Status(http.StatusInternalServerError)
+		}
 		return
 	}
 
-	var choices []dto.Choice
-	for _, choice := range sp.Problem.Choices {
-		choices = append(choices, dto.Choice{
-			ID:         int64(choice.ID),
-			ChoiceText: choice.ChoiceText,
-		})
-	}
-
-	var selectedChoiceID *int64
-	if sp.SelectedChoiceID != nil {
-		id := int64(*sp.SelectedChoiceID)
-		selectedChoiceID = &id
-	}
-
-	c.JSON(http.StatusOK, dto.SessionProblem{
-		ID:         int64(sp.ID),
-		Question:   sp.Problem.Question,
-		Choices:    choices,
-		Hint:       sp.Problem.Hint,
-		SelectedID: selectedChoiceID,
-		Total:      int(total),
-	})
+	c.JSON(http.StatusOK, problem)
 }
 
 // POST /session/current/problems/:idx/answer
@@ -118,38 +94,20 @@ func (h *SessionHandler) SubmitAnswer(c *gin.Context) {
 
 	idx, _ := strconv.Atoi(c.Param("idx"))
 
-	sps, err := h.repo.FindSessionProblemsBySessionID(sessionID)
-	if err != nil {
-		c.Status(http.StatusInternalServerError)
-		return
-	}
-
-	if idx < 0 || idx >= len(sps) {
-		c.Status(http.StatusBadRequest)
-		return
-	}
-
 	var req dto.AnswerRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.Status(http.StatusBadRequest)
 		return
 	}
 
-	// 未解答(null)の場合は処理なし
-	if req.SelectedChoiceID != nil {
-		sp := sps[idx]
-		selectedChoice, err := h.repo.FindChoiceByProblemAndChoiceID(sp.ProblemID, uint64(*req.SelectedChoiceID))
-		if err != nil {
+	if err := h.testSessService.SubmitAnswer(sessionID, idx, req.SelectedChoiceID); err != nil {
+		switch {
+		case errors.Is(err, apperr.ErrOutOfRange), errors.Is(err, apperr.ErrNotFound):
 			c.Status(http.StatusBadRequest)
-			return
-		}
-
-		sp.SelectedChoiceID = &selectedChoice.ID
-		sp.IsCorrect = &selectedChoice.IsCorrect
-		if err := h.repo.SaveSessionProblem(&sp); err != nil {
+		default:
 			c.Status(http.StatusInternalServerError)
-			return
 		}
+		return
 	}
 
 	c.Status(http.StatusNoContent)

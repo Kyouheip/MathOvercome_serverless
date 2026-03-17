@@ -21,7 +21,7 @@ func New(client *dynamodb.Client, sessionSecret string) *gin.Engine {
 	testSessSvc := service.NewTestSessionService(repo)
 	mypageSvc := service.NewMypageService(repo)
 	authHandler := handler.NewAuthHandler(loginSvc)
-	sessionHandler := handler.NewSessionHandler(testSessSvc, mypageSvc, repo)
+	sessionHandler := handler.NewSessionHandler(testSessSvc, mypageSvc)
 
 	r := gin.Default()
 

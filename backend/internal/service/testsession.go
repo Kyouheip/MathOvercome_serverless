@@ -3,6 +3,8 @@ package service
 import (
 	"fmt"
 
+	"github.com/Kyouheip/MathOvercome_serverless/internal/apperr"
+	"github.com/Kyouheip/MathOvercome_serverless/internal/dto"
 	"github.com/Kyouheip/MathOvercome_serverless/internal/model"
 	"github.com/Kyouheip/MathOvercome_serverless/internal/repository"
 )
@@ -53,4 +55,66 @@ func (s *TestSessionService) CreateTestSess(user *model.User, includeIntegers bo
 
 	session.SessionProblems = sessProbs
 	return &session, nil
+}
+
+func (s *TestSessionService) GetProblem(sessionID uint64, idx int) (*dto.SessionProblem, error) {
+	total, err := s.repo.CountSessionProblems(sessionID)
+	if err != nil {
+		return nil, err
+	}
+	if idx < 0 || idx >= int(total) {
+		return nil, apperr.ErrOutOfRange
+	}
+
+	sp, err := s.repo.FindSessionProblemByIdx(sessionID, idx)
+	if err != nil {
+		return nil, apperr.ErrNotFound
+	}
+
+	var choices []dto.Choice
+	for _, c := range sp.Problem.Choices {
+		choices = append(choices, dto.Choice{
+			ID:         int64(c.ID),
+			ChoiceText: c.ChoiceText,
+		})
+	}
+
+	var selectedChoiceID *int64
+	if sp.SelectedChoiceID != nil {
+		id := int64(*sp.SelectedChoiceID)
+		selectedChoiceID = &id
+	}
+
+	return &dto.SessionProblem{
+		ID:         int64(sp.ID),
+		Question:   sp.Problem.Question,
+		Choices:    choices,
+		Hint:       sp.Problem.Hint,
+		SelectedID: selectedChoiceID,
+		Total:      int(total),
+	}, nil
+}
+
+func (s *TestSessionService) SubmitAnswer(sessionID uint64, idx int, choiceID *int64) error {
+	if choiceID == nil {
+		return nil
+	}
+
+	sps, err := s.repo.FindSessionProblemsBySessionID(sessionID)
+	if err != nil {
+		return err
+	}
+	if idx < 0 || idx >= len(sps) {
+		return apperr.ErrOutOfRange
+	}
+
+	sp := sps[idx]
+	choice, err := s.repo.FindChoiceByProblemAndChoiceID(sp.ProblemID, uint64(*choiceID))
+	if err != nil {
+		return apperr.ErrNotFound
+	}
+
+	sp.SelectedChoiceID = &choice.ID
+	sp.IsCorrect = &choice.IsCorrect
+	return s.repo.SaveSessionProblem(&sp)
 }

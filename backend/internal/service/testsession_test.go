@@ -10,9 +10,14 @@ import (
 
 // mockTestSessionRepo は repository.TestSessionRepo のテスト用実装。
 type mockTestSessionRepo struct {
-	saveTestSessionFn         func(session *model.TestSession) error
-	findProblemsPerCategoryFn func(categoryIDs []int, countPerCategory int) ([]model.Problem, error)
-	saveSessionProblemsFn     func(sps []model.SessionProblem) error
+	saveTestSessionFn               func(session *model.TestSession) error
+	findProblemsPerCategoryFn       func(categoryIDs []int, countPerCategory int) ([]model.Problem, error)
+	saveSessionProblemsFn           func(sps []model.SessionProblem) error
+	countSessionProblemsFn          func(sessionID uint64) (int64, error)
+	findSessionProblemByIdxFn       func(sessionID uint64, idx int) (*model.SessionProblem, error)
+	findSessionProblemsBySessionIDFn func(sessionID uint64) ([]model.SessionProblem, error)
+	findChoiceByProblemAndChoiceIDFn func(problemID, choiceID uint64) (*model.Choice, error)
+	saveSessionProblemFn            func(sp *model.SessionProblem) error
 }
 
 func (m *mockTestSessionRepo) SaveTestSession(session *model.TestSession) error {
@@ -25,6 +30,26 @@ func (m *mockTestSessionRepo) FindProblemsPerCategory(categoryIDs []int, countPe
 
 func (m *mockTestSessionRepo) SaveSessionProblems(sps []model.SessionProblem) error {
 	return m.saveSessionProblemsFn(sps)
+}
+
+func (m *mockTestSessionRepo) CountSessionProblems(sessionID uint64) (int64, error) {
+	return m.countSessionProblemsFn(sessionID)
+}
+
+func (m *mockTestSessionRepo) FindSessionProblemByIdx(sessionID uint64, idx int) (*model.SessionProblem, error) {
+	return m.findSessionProblemByIdxFn(sessionID, idx)
+}
+
+func (m *mockTestSessionRepo) FindSessionProblemsBySessionID(sessionID uint64) ([]model.SessionProblem, error) {
+	return m.findSessionProblemsBySessionIDFn(sessionID)
+}
+
+func (m *mockTestSessionRepo) FindChoiceByProblemAndChoiceID(problemID, choiceID uint64) (*model.Choice, error) {
+	return m.findChoiceByProblemAndChoiceIDFn(problemID, choiceID)
+}
+
+func (m *mockTestSessionRepo) SaveSessionProblem(sp *model.SessionProblem) error {
+	return m.saveSessionProblemFn(sp)
 }
 
 func makeProblems(n int) []model.Problem {

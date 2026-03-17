@@ -12,10 +12,10 @@ import (
 	"github.com/gin-contrib/sessions/cookie"
 	"github.com/gin-gonic/gin"
 
+	"github.com/Kyouheip/MathOvercome_serverless/internal/apperr"
 	"github.com/Kyouheip/MathOvercome_serverless/internal/dto"
 	"github.com/Kyouheip/MathOvercome_serverless/internal/handler"
 	"github.com/Kyouheip/MathOvercome_serverless/internal/model"
-	"github.com/Kyouheip/MathOvercome_serverless/internal/repository"
 	"github.com/Kyouheip/MathOvercome_serverless/internal/service"
 )
 
@@ -23,10 +23,20 @@ import (
 
 type mockTestSessionService struct {
 	createTestSessFn func(user *model.User, includeIntegers bool) (*model.TestSession, error)
+	getProblemFn     func(sessionID uint64, idx int) (*dto.SessionProblem, error)
+	submitAnswerFn   func(sessionID uint64, idx int, choiceID *int64) error
 }
 
 func (m *mockTestSessionService) CreateTestSess(user *model.User, includeIntegers bool) (*model.TestSession, error) {
 	return m.createTestSessFn(user, includeIntegers)
+}
+
+func (m *mockTestSessionService) GetProblem(sessionID uint64, idx int) (*dto.SessionProblem, error) {
+	return m.getProblemFn(sessionID, idx)
+}
+
+func (m *mockTestSessionService) SubmitAnswer(sessionID uint64, idx int, choiceID *int64) error {
+	return m.submitAnswerFn(sessionID, idx, choiceID)
 }
 
 type mockMypageService struct {
@@ -37,40 +47,10 @@ func (m *mockMypageService) GetUserData(user *model.User) (*dto.User, error) {
 	return m.getUserDataFn(user)
 }
 
-type mockSessionRepo struct {
-	countSessionProblemsFn           func(sessionID uint64) (int64, error)
-	findSessionProblemByIdxFn        func(sessionID uint64, idx int) (*model.SessionProblem, error)
-	findSessionProblemsBySessionIDFn func(sessionID uint64) ([]model.SessionProblem, error)
-	findChoiceByProblemAndChoiceIDFn func(problemID, choiceID uint64) (*model.Choice, error)
-	saveSessionProblemFn             func(sp *model.SessionProblem) error
-}
-
-func (m *mockSessionRepo) CountSessionProblems(sessionID uint64) (int64, error) {
-	return m.countSessionProblemsFn(sessionID)
-}
-
-func (m *mockSessionRepo) FindSessionProblemByIdx(sessionID uint64, idx int) (*model.SessionProblem, error) {
-	return m.findSessionProblemByIdxFn(sessionID, idx)
-}
-
-func (m *mockSessionRepo) FindSessionProblemsBySessionID(sessionID uint64) ([]model.SessionProblem, error) {
-	return m.findSessionProblemsBySessionIDFn(sessionID)
-}
-
-func (m *mockSessionRepo) FindChoiceByProblemAndChoiceID(problemID, choiceID uint64) (*model.Choice, error) {
-	return m.findChoiceByProblemAndChoiceIDFn(problemID, choiceID)
-}
-
-func (m *mockSessionRepo) SaveSessionProblem(sp *model.SessionProblem) error {
-	return m.saveSessionProblemFn(sp)
-}
-
 // newSessionEngine はテスト用エンジンを作成する。
-// sessionVals に指定した値はリクエスト処理前にセッションへセットされる。
 func newSessionEngine(
 	ts service.TestSessionServicer,
 	ms service.MypageServicer,
-	repo repository.SessionRepo,
 	sessionVals map[string]any,
 ) *gin.Engine {
 	gin.SetMode(gin.TestMode)
@@ -88,7 +68,7 @@ func newSessionEngine(
 		})
 	}
 
-	h := handler.NewSessionHandler(ts, ms, repo)
+	h := handler.NewSessionHandler(ts, ms)
 	r.POST("/session/test", h.CreateTestSess)
 	r.GET("/session/current/problems/:idx", h.ViewOneProblem)
 	r.POST("/session/current/problems/:idx/answer", h.SubmitAnswer)
@@ -99,7 +79,7 @@ func newSessionEngine(
 // --- CreateTestSess ---
 
 func TestCreateTestSess_Unauthorized(t *testing.T) {
-	r := newSessionEngine(nil, nil, &mockSessionRepo{}, nil)
+	r := newSessionEngine(nil, nil, nil)
 	w := httptest.NewRecorder()
 	req := httptest.NewRequest(http.MethodPost, "/session/test", nil)
 	r.ServeHTTP(w, req)
@@ -115,7 +95,7 @@ func TestCreateTestSess_Success(t *testing.T) {
 			return &model.TestSession{ID: 42, UserID: u.ID}, nil
 		},
 	}
-	r := newSessionEngine(ts, nil, &mockSessionRepo{}, map[string]any{"user": user})
+	r := newSessionEngine(ts, nil, map[string]any{"user": user})
 
 	w := httptest.NewRecorder()
 	req := httptest.NewRequest(http.MethodPost, "/session/test", nil)
@@ -132,7 +112,7 @@ func TestCreateTestSess_ServiceError(t *testing.T) {
 			return nil, errors.New("db error")
 		},
 	}
-	r := newSessionEngine(ts, nil, &mockSessionRepo{}, map[string]any{"user": user})
+	r := newSessionEngine(ts, nil, map[string]any{"user": user})
 
 	w := httptest.NewRecorder()
 	req := httptest.NewRequest(http.MethodPost, "/session/test", nil)
@@ -145,7 +125,7 @@ func TestCreateTestSess_ServiceError(t *testing.T) {
 // --- ViewOneProblem ---
 
 func TestViewOneProblem_Unauthorized(t *testing.T) {
-	r := newSessionEngine(nil, nil, &mockSessionRepo{}, nil)
+	r := newSessionEngine(nil, nil, nil)
 	w := httptest.NewRecorder()
 	req := httptest.NewRequest(http.MethodGet, "/session/current/problems/0", nil)
 	r.ServeHTTP(w, req)
@@ -156,8 +136,7 @@ func TestViewOneProblem_Unauthorized(t *testing.T) {
 
 func TestViewOneProblem_NoCurrentSession(t *testing.T) {
 	user := &model.User{ID: 1}
-	// currentSessionId をセットしない
-	r := newSessionEngine(nil, nil, &mockSessionRepo{}, map[string]any{"user": user})
+	r := newSessionEngine(nil, nil, map[string]any{"user": user})
 
 	w := httptest.NewRecorder()
 	req := httptest.NewRequest(http.MethodGet, "/session/current/problems/0", nil)
@@ -170,18 +149,17 @@ func TestViewOneProblem_NoCurrentSession(t *testing.T) {
 func TestViewOneProblem_OutOfRange(t *testing.T) {
 	user := &model.User{ID: 1}
 	var sessionID uint64 = 10
-	repo := &mockSessionRepo{
-		countSessionProblemsFn: func(sID uint64) (int64, error) {
-			return 5, nil
+	ts := &mockTestSessionService{
+		getProblemFn: func(sID uint64, idx int) (*dto.SessionProblem, error) {
+			return nil, apperr.ErrOutOfRange
 		},
 	}
-	r := newSessionEngine(nil, nil, repo, map[string]any{
+	r := newSessionEngine(ts, nil, map[string]any{
 		"user":             user,
 		"currentSessionId": sessionID,
 	})
 
 	w := httptest.NewRecorder()
-	// idx=10 は範囲外 (total=5)
 	req := httptest.NewRequest(http.MethodGet, "/session/current/problems/10", nil)
 	r.ServeHTTP(w, req)
 	if w.Code != http.StatusBadRequest {
@@ -192,30 +170,24 @@ func TestViewOneProblem_OutOfRange(t *testing.T) {
 func TestViewOneProblem_Success(t *testing.T) {
 	user := &model.User{ID: 1}
 	var sessionID uint64 = 10
-	choiceID := uint64(5)
-	isCorrect := true
+	choiceID := int64(5)
 
-	repo := &mockSessionRepo{
-		countSessionProblemsFn: func(sID uint64) (int64, error) {
-			return 5, nil
-		},
-		findSessionProblemByIdxFn: func(sID uint64, idx int) (*model.SessionProblem, error) {
-			return &model.SessionProblem{
-				ID: 1,
-				Problem: model.Problem{
-					Question: "1+1=?",
-					Hint:     "2です",
-					Choices: []model.Choice{
-						{ID: 5, ChoiceText: "2", IsCorrect: true},
-						{ID: 6, ChoiceText: "3", IsCorrect: false},
-					},
+	ts := &mockTestSessionService{
+		getProblemFn: func(sID uint64, idx int) (*dto.SessionProblem, error) {
+			return &dto.SessionProblem{
+				ID:       1,
+				Question: "1+1=?",
+				Hint:     "2です",
+				Choices: []dto.Choice{
+					{ID: 5, ChoiceText: "2"},
+					{ID: 6, ChoiceText: "3"},
 				},
-				SelectedChoiceID: &choiceID,
-				IsCorrect:        &isCorrect,
+				SelectedID: &choiceID,
+				Total:      5,
 			}, nil
 		},
 	}
-	r := newSessionEngine(nil, nil, repo, map[string]any{
+	r := newSessionEngine(ts, nil, map[string]any{
 		"user":             user,
 		"currentSessionId": sessionID,
 	})
@@ -248,7 +220,7 @@ func TestViewOneProblem_Success(t *testing.T) {
 // --- SubmitAnswer ---
 
 func TestSubmitAnswer_Unauthorized(t *testing.T) {
-	r := newSessionEngine(nil, nil, &mockSessionRepo{}, nil)
+	r := newSessionEngine(nil, nil, nil)
 	w := httptest.NewRecorder()
 	req := httptest.NewRequest(http.MethodPost, "/session/current/problems/0/answer", nil)
 	r.ServeHTTP(w, req)
@@ -260,12 +232,12 @@ func TestSubmitAnswer_Unauthorized(t *testing.T) {
 func TestSubmitAnswer_NullAnswer(t *testing.T) {
 	user := &model.User{ID: 1}
 	var sessionID uint64 = 10
-	repo := &mockSessionRepo{
-		findSessionProblemsBySessionIDFn: func(sID uint64) ([]model.SessionProblem, error) {
-			return []model.SessionProblem{{ID: 1, ProblemID: 1}}, nil
+	ts := &mockTestSessionService{
+		submitAnswerFn: func(sID uint64, idx int, choiceID *int64) error {
+			return nil
 		},
 	}
-	r := newSessionEngine(nil, nil, repo, map[string]any{
+	r := newSessionEngine(ts, nil, map[string]any{
 		"user":             user,
 		"currentSessionId": sessionID,
 	})
@@ -284,17 +256,12 @@ func TestSubmitAnswer_NullAnswer(t *testing.T) {
 func TestSubmitAnswer_WithChoice(t *testing.T) {
 	user := &model.User{ID: 1}
 	var sessionID uint64 = 10
-
-	repo := &mockSessionRepo{
-		findSessionProblemsBySessionIDFn: func(sID uint64) ([]model.SessionProblem, error) {
-			return []model.SessionProblem{{ID: 1, ProblemID: 1}}, nil
+	ts := &mockTestSessionService{
+		submitAnswerFn: func(sID uint64, idx int, choiceID *int64) error {
+			return nil
 		},
-		findChoiceByProblemAndChoiceIDFn: func(problemID, choiceID uint64) (*model.Choice, error) {
-			return &model.Choice{ID: choiceID, IsCorrect: true}, nil
-		},
-		saveSessionProblemFn: func(sp *model.SessionProblem) error { return nil },
 	}
-	r := newSessionEngine(nil, nil, repo, map[string]any{
+	r := newSessionEngine(ts, nil, map[string]any{
 		"user":             user,
 		"currentSessionId": sessionID,
 	})
@@ -314,19 +281,18 @@ func TestSubmitAnswer_WithChoice(t *testing.T) {
 func TestSubmitAnswer_OutOfRange(t *testing.T) {
 	user := &model.User{ID: 1}
 	var sessionID uint64 = 10
-	repo := &mockSessionRepo{
-		findSessionProblemsBySessionIDFn: func(sID uint64) ([]model.SessionProblem, error) {
-			return []model.SessionProblem{{ID: 1}}, nil // 問題は1問のみ
+	ts := &mockTestSessionService{
+		submitAnswerFn: func(sID uint64, idx int, choiceID *int64) error {
+			return apperr.ErrOutOfRange
 		},
 	}
-	r := newSessionEngine(nil, nil, repo, map[string]any{
+	r := newSessionEngine(ts, nil, map[string]any{
 		"user":             user,
 		"currentSessionId": sessionID,
 	})
 
 	body, _ := json.Marshal(dto.AnswerRequest{SelectedChoiceID: nil})
 	w := httptest.NewRecorder()
-	// idx=5 は範囲外
 	req := httptest.NewRequest(http.MethodPost, "/session/current/problems/5/answer", bytes.NewReader(body))
 	req.Header.Set("Content-Type", "application/json")
 	r.ServeHTTP(w, req)
@@ -339,7 +305,7 @@ func TestSubmitAnswer_OutOfRange(t *testing.T) {
 // --- GetMypage ---
 
 func TestGetMypage_Unauthorized(t *testing.T) {
-	r := newSessionEngine(nil, nil, &mockSessionRepo{}, nil)
+	r := newSessionEngine(nil, nil, nil)
 	w := httptest.NewRecorder()
 	req := httptest.NewRequest(http.MethodGet, "/session/mypage", nil)
 	r.ServeHTTP(w, req)
@@ -355,7 +321,7 @@ func TestGetMypage_Success(t *testing.T) {
 			return &dto.User{UserName: u.UserName, TestSessDtos: []dto.TestSession{}}, nil
 		},
 	}
-	r := newSessionEngine(nil, ms, &mockSessionRepo{}, map[string]any{"user": user})
+	r := newSessionEngine(nil, ms, map[string]any{"user": user})
 
 	w := httptest.NewRecorder()
 	req := httptest.NewRequest(http.MethodGet, "/session/mypage", nil)
@@ -380,7 +346,7 @@ func TestGetMypage_ServiceError(t *testing.T) {
 			return nil, errors.New("db error")
 		},
 	}
-	r := newSessionEngine(nil, ms, &mockSessionRepo{}, map[string]any{"user": user})
+	r := newSessionEngine(nil, ms, map[string]any{"user": user})
 
 	w := httptest.NewRecorder()
 	req := httptest.NewRequest(http.MethodGet, "/session/mypage", nil)

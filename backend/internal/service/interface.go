@@ -15,6 +15,8 @@ type LoginServicer interface {
 // TestSessionServicer はテストセッション操作を定義する。
 type TestSessionServicer interface {
 	CreateTestSess(user *model.User, includeIntegers bool) (*model.TestSession, error)
+	GetProblem(sessionID uint64, idx int) (*dto.SessionProblem, error)
+	SubmitAnswer(sessionID uint64, idx int, choiceID *int64) error
 }
 
 // MypageServicer はマイページ操作を定義する。
