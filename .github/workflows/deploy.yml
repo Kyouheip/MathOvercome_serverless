@@ -91,6 +91,9 @@ jobs:
         run: npm ci
 
       - name: Build
+        env:
+          # 💡 ここを追加！GitHub SecretsからURLを読み込んで注入します
+          NEXT_PUBLIC_API_URL: ${{ secrets.NEXT_PUBLIC_API_URL }}
         run: npm run build
 
       - name: Deploy to S3
