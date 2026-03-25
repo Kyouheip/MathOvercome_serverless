@@ -23,7 +23,10 @@ jobs:
   # -----------------------------------------
   deploy-backend:
     runs-on: ubuntu-latest
-    if: contains(github.event.head_commit.modified, 'backend/') || contains(github.event.head_commit.added, 'backend/')
+    if: |
+      contains(github.event.head_commit.modified, 'backend/') ||
+      contains(github.event.head_commit.added, 'backend/') ||
+      contains(github.event.head_commit.modified, '.github/workflows/deploy.yml')
     defaults:
       run:
         working-directory: backend
@@ -65,7 +68,10 @@ jobs:
   # -----------------------------------------
   deploy-frontend:
     runs-on: ubuntu-latest
-    if: contains(github.event.head_commit.modified, 'frontend/') || contains(github.event.head_commit.added, 'frontend/')
+    if: |
+      contains(github.event.head_commit.modified, 'frontend/') ||
+      contains(github.event.head_commit.added, 'frontend/') ||
+      contains(github.event.head_commit.modified, '.github/workflows/deploy.yml')
     defaults:
       run:
         working-directory: frontend
