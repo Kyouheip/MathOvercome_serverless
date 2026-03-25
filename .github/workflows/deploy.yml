@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - main
-    #  変更があったフォルダだけ反応させる
     paths:
       - 'backend/**'
       - 'frontend/**'
@@ -15,18 +14,37 @@ env:
   ECR_REPOSITORY: math-overcome-app
   AWS_ACCOUNT_ID: 088994865030
   LAMBDA_FUNCTION_NAME: math-overcome-backend
-  S3_BUCKET_NAME: math-overcome 
+  S3_BUCKET_NAME: math-overcome
 
 jobs:
+  # -----------------------------------------
+  # 変更検知
+  # -----------------------------------------
+  changes:
+    runs-on: ubuntu-latest
+    outputs:
+      backend: ${{ steps.filter.outputs.backend }}
+      frontend: ${{ steps.filter.outputs.frontend }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            backend:
+              - 'backend/**'
+              - '.github/workflows/deploy.yml'
+            frontend:
+              - 'frontend/**'
+              - '.github/workflows/deploy.yml'
+
   # -----------------------------------------
   # バックエンドのデプロイ
   # -----------------------------------------
   deploy-backend:
+    needs: changes
+    if: needs.changes.outputs.backend == 'true'
     runs-on: ubuntu-latest
-    if: |
-      contains(github.event.head_commit.modified, 'backend/') ||
-      contains(github.event.head_commit.added, 'backend/') ||
-      contains(github.event.head_commit.modified, '.github/workflows/deploy.yml')
     defaults:
       run:
         working-directory: backend
@@ -67,11 +85,9 @@ jobs:
   # フロントエンドのデプロイ
   # -----------------------------------------
   deploy-frontend:
+    needs: changes
+    if: needs.changes.outputs.frontend == 'true'
     runs-on: ubuntu-latest
-    if: |
-      contains(github.event.head_commit.modified, 'frontend/') ||
-      contains(github.event.head_commit.added, 'frontend/') ||
-      contains(github.event.head_commit.modified, '.github/workflows/deploy.yml')
     defaults:
       run:
         working-directory: frontend
@@ -98,7 +114,6 @@ jobs:
 
       - name: Build
         env:
-          # 💡 ここを追加！GitHub SecretsからURLを読み込んで注入します
           NEXT_PUBLIC_API_URL: ${{ secrets.NEXT_PUBLIC_API_URL }}
         run: npm run build
 
