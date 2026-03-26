@@ -5,7 +5,6 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 
 	"github.com/Kyouheip/MathOvercome_serverless/internal/apperr"
@@ -25,36 +24,31 @@ func NewSessionHandler(ts service.TestSessionServicer, ms service.MypageServicer
 
 // POST /session/test
 func (h *SessionHandler) CreateTestSess(c *gin.Context) {
-	user := getUserFromSession(c)
-	if user == nil {
+	userSub := c.GetHeader("X-User-Sub")
+	if userSub == "" {
 		c.Status(http.StatusUnauthorized)
 		return
 	}
 
 	includeIntegers, _ := strconv.ParseBool(c.DefaultQuery("includeIntegers", "false"))
 
-	testSess, err := h.testSessService.CreateTestSess(user, includeIntegers)
+	testSess, err := h.testSessService.CreateTestSess(userSub, includeIntegers)
 	if err != nil {
 		c.Status(http.StatusInternalServerError)
 		return
 	}
 
-	session := sessions.Default(c)
-	session.Set("currentSessionId", testSess.ID)
-	session.Save()
-
-	c.Status(http.StatusCreated)
+	c.JSON(http.StatusCreated, gin.H{"sessionId": testSess.ID})
 }
 
 // GET /session/current/problems/:idx
 func (h *SessionHandler) ViewOneProblem(c *gin.Context) {
-	user := getUserFromSession(c)
-	if user == nil {
+	if c.GetHeader("X-User-Sub") == "" {
 		c.Status(http.StatusUnauthorized)
 		return
 	}
 
-	sessionID, ok := getCurrentSessionID(c)
+	sessionID, ok := getSessionIDFromQuery(c)
 	if !ok {
 		c.Status(http.StatusBadRequest)
 		return
@@ -80,13 +74,12 @@ func (h *SessionHandler) ViewOneProblem(c *gin.Context) {
 
 // POST /session/current/problems/:idx/answer
 func (h *SessionHandler) SubmitAnswer(c *gin.Context) {
-	user := getUserFromSession(c)
-	if user == nil {
+	if c.GetHeader("X-User-Sub") == "" {
 		c.Status(http.StatusUnauthorized)
 		return
 	}
 
-	sessionID, ok := getCurrentSessionID(c)
+	sessionID, ok := getSessionIDFromQuery(c)
 	if !ok {
 		c.Status(http.StatusBadRequest)
 		return
@@ -115,10 +108,15 @@ func (h *SessionHandler) SubmitAnswer(c *gin.Context) {
 
 // GET /session/mypage
 func (h *SessionHandler) GetMypage(c *gin.Context) {
-	user := getUserFromSession(c)
-	if user == nil {
+	userSub := c.GetHeader("X-User-Sub")
+	if userSub == "" {
 		c.String(http.StatusUnauthorized, "NOT_LOGIN")
 		return
+	}
+
+	user := &model.User{
+		Sub:      userSub,
+		UserName: c.GetHeader("X-User-Name"),
 	}
 
 	result, err := h.mypageService.GetUserData(user)
@@ -130,25 +128,14 @@ func (h *SessionHandler) GetMypage(c *gin.Context) {
 	c.JSON(http.StatusOK, result)
 }
 
-func getUserFromSession(c *gin.Context) *model.User {
-	session := sessions.Default(c)
-	val := session.Get("user")
-	if val == nil {
-		return nil
-	}
-	user, ok := val.(*model.User)
-	if !ok {
-		return nil
-	}
-	return user
-}
-
-func getCurrentSessionID(c *gin.Context) (uint64, bool) {
-	session := sessions.Default(c)
-	val := session.Get("currentSessionId")
-	if val == nil {
+func getSessionIDFromQuery(c *gin.Context) (uint64, bool) {
+	s := c.Query("sessionId")
+	if s == "" {
 		return 0, false
 	}
-	id, ok := val.(uint64)
-	return id, ok
+	id, err := strconv.ParseUint(s, 10, 64)
+	if err != nil {
+		return 0, false
+	}
+	return id, true
 }

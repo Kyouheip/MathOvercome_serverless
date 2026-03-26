@@ -6,18 +6,6 @@ type AnswerRequest struct {
 	SelectedChoiceID *int64 `json:"selectedChoiceId"`
 }
 
-type LoginRequest struct {
-	UserID   string `json:"userId" binding:"required"`
-	Password string `json:"password" binding:"required"`
-}
-
-type RegisterRequest struct {
-	UserName  string `json:"userName" binding:"required"`
-	UserID    string `json:"userId" binding:"required,min=6,max=16,alphanum"`
-	Password1 string `json:"password1" binding:"required,min=6,max=16,alphanum"`
-	Password2 string `json:"password2" binding:"required,min=6,max=16,alphanum"`
-}
-
 // --- Responses ---
 
 type Choice struct {

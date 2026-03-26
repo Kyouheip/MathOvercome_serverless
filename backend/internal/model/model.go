@@ -1,20 +1,10 @@
 package model
 
-import (
-	"encoding/gob"
-	"time"
-)
-
-func init() {
-	gob.Register(&User{})
-	gob.Register(uint64(0))
-}
+import "time"
 
 type User struct {
-	ID       uint64
+	Sub      string // Cognito sub
 	UserName string
-	UserID   string
-	Password string `json:"-"`
 }
 
 type Category struct {
@@ -39,7 +29,7 @@ type Choice struct {
 
 type TestSession struct {
 	ID              uint64
-	UserID          uint64
+	UserID          string // Cognito sub
 	IncludeIntegers bool
 	StartTime       time.Time
 	SessionProblems []SessionProblem `json:",omitempty"`

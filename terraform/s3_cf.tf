@@ -3,6 +3,15 @@ resource "aws_s3_bucket" "frontend" {
   bucket = "${var.project_name}-frontend-bucket"
 }
 
+# パブリックアクセスブロック
+resource "aws_s3_bucket_public_access_block" "frontend" {
+  bucket = aws_s3_bucket.frontend.id
+
+  block_public_acls       = true
+  block_public_policy     = true
+  ignore_public_acls      = true
+  restrict_public_buckets = true
+}
 # CloudFront Origin Access Control (OAC)
 resource "aws_cloudfront_origin_access_control" "oac" {
   name                              = "${var.project_name}-oac"
@@ -26,11 +35,7 @@ resource "aws_cloudfront_distribution" "cdn" {
     allowed_methods  = ["GET", "HEAD"]
     cached_methods   = ["GET", "HEAD"]
     target_origin_id = "S3-${aws_s3_bucket.frontend.id}"
-
-    forwarded_values {
-      query_string = false
-      cookies { forward = "none" }
-    }
+    cache_policy_id = "658327ea-f89d-4fab-a63d-7e88639e58f6"
     viewer_protocol_policy = "redirect-to-https"
   }
 

@@ -8,7 +8,8 @@ resource "aws_lambda_function" "backend" {
 
   environment {
     variables = {
-      TABLE_NAME = aws_dynamodb_table.main.name
+      DYNAMODB_TABLE     = aws_dynamodb_table.main.name
+      SESSION_SECRET = var.session_secret
     }
   }
 }

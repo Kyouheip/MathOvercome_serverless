@@ -2,12 +2,6 @@ package repository
 
 import "github.com/Kyouheip/MathOvercome_serverless/internal/model"
 
-// LoginRepo は LoginService が使うリポジトリ操作を定義する。
-type LoginRepo interface {
-	FindUserByUserID(userID string) (*model.User, error)
-	SaveUser(user *model.User) error
-}
-
 // TestSessionRepo は TestSessionService が使うリポジトリ操作を定義する。
 type TestSessionRepo interface {
 	SaveTestSession(session *model.TestSession) error
@@ -22,7 +16,7 @@ type TestSessionRepo interface {
 
 // MypageRepo は MypageService が使うリポジトリ操作を定義する。
 type MypageRepo interface {
-	GetSessionProblemsRaw(userID uint64) ([]SessionProblemRow, error)
+	GetSessionProblemsRaw(userSub string) ([]SessionProblemRow, error)
 	GetCategoryStats(sessionID uint64) ([]CategoryStats, error)
 	GetWeakCategories(sessionID uint64) ([]string, error)
 }

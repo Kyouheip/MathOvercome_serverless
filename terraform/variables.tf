@@ -4,5 +4,9 @@ variable "aws_region" {
 }
 
 variable "project_name" {
-  default = "my-serverless-app"
+  default = "mathovercome"
+}
+
+variable "session_secret" {
+  sensitive = true
 }

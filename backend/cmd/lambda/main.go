@@ -30,12 +30,7 @@ func init() {
 
 	client := dynamodb.NewFromConfig(cfg)
 
-	secret := os.Getenv("SESSION_SECRET")
-	if secret == "" {
-		log.Fatal("SESSION_SECRET environment variable is required")
-	}
-
-	r := router.New(client, secret)
+	r := router.New(client)
 	ginLambda = ginadapter.New(r)
 }
 

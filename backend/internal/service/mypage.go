@@ -19,7 +19,7 @@ func NewMypageService(r repository.MypageRepo) *MypageService {
 }
 
 func (s *MypageService) GetUserData(user *model.User) (*dto.User, error) {
-	rows, err := s.repo.GetSessionProblemsRaw(user.ID)
+	rows, err := s.repo.GetSessionProblemsRaw(user.Sub)
 	if err != nil {
 		return nil, fmt.Errorf("get session problems: %w", err)
 	}

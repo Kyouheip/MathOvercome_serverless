@@ -13,3 +13,9 @@ vendor/
 .vscode/
 
 .env
+
+# Terraform
+terraform/terraform.tfvars
+terraform/.terraform/
+terraform/*.tfstate
+terraform/*.tfstate.backup

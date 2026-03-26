@@ -24,7 +24,6 @@ func main() {
 	}
 
 	var opts []func(*dynamodb.Options)
-	// ローカル DynamoDB (DynamoDB Local / LocalStack) を使う場合は DYNAMODB_ENDPOINT を設定
 	if endpoint := os.Getenv("DYNAMODB_ENDPOINT"); endpoint != "" {
 		opts = append(opts, func(o *dynamodb.Options) {
 			o.BaseEndpoint = aws.String(endpoint)
@@ -32,12 +31,7 @@ func main() {
 	}
 	client := dynamodb.NewFromConfig(cfg, opts...)
 
-	secret := os.Getenv("SESSION_SECRET")
-	if secret == "" {
-		secret = "local-dev-secret"
-	}
-
-	r := router.New(client, secret)
+	r := router.New(client)
 
 	port := os.Getenv("PORT")
 	if port == "" {

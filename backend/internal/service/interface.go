@@ -5,16 +5,9 @@ import (
 	"github.com/Kyouheip/MathOvercome_serverless/internal/model"
 )
 
-// LoginServicer は認証操作を定義する。
-type LoginServicer interface {
-	Authenticate(req dto.LoginRequest) (*model.User, error)
-	ValidateRegister(req dto.RegisterRequest) error
-	CreateUser(req dto.RegisterRequest) error
-}
-
 // TestSessionServicer はテストセッション操作を定義する。
 type TestSessionServicer interface {
-	CreateTestSess(user *model.User, includeIntegers bool) (*model.TestSession, error)
+	CreateTestSess(userSub string, includeIntegers bool) (*model.TestSession, error)
 	GetProblem(sessionID uint64, idx int) (*dto.SessionProblem, error)
 	SubmitAnswer(sessionID uint64, idx int, choiceID *int64) error
 }

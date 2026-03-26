@@ -10,14 +10,14 @@ import (
 
 // mockTestSessionRepo は repository.TestSessionRepo のテスト用実装。
 type mockTestSessionRepo struct {
-	saveTestSessionFn               func(session *model.TestSession) error
-	findProblemsPerCategoryFn       func(categoryIDs []int, countPerCategory int) ([]model.Problem, error)
-	saveSessionProblemsFn           func(sps []model.SessionProblem) error
-	countSessionProblemsFn          func(sessionID uint64) (int64, error)
-	findSessionProblemByIdxFn       func(sessionID uint64, idx int) (*model.SessionProblem, error)
+	saveTestSessionFn                func(session *model.TestSession) error
+	findProblemsPerCategoryFn        func(categoryIDs []int, countPerCategory int) ([]model.Problem, error)
+	saveSessionProblemsFn            func(sps []model.SessionProblem) error
+	countSessionProblemsFn           func(sessionID uint64) (int64, error)
+	findSessionProblemByIdxFn        func(sessionID uint64, idx int) (*model.SessionProblem, error)
 	findSessionProblemsBySessionIDFn func(sessionID uint64) ([]model.SessionProblem, error)
 	findChoiceByProblemAndChoiceIDFn func(problemID, choiceID uint64) (*model.Choice, error)
-	saveSessionProblemFn            func(sp *model.SessionProblem) error
+	saveSessionProblemFn             func(sp *model.SessionProblem) error
 }
 
 func (m *mockTestSessionRepo) SaveTestSession(session *model.TestSession) error {
@@ -75,7 +75,7 @@ func TestCreateTestSess_Success(t *testing.T) {
 	}
 	svc := service.NewTestSessionService(repo)
 
-	sess, err := svc.CreateTestSess(&model.User{ID: 1}, false)
+	sess, err := svc.CreateTestSess("sub-1", false)
 	if err != nil {
 		t.Fatalf("expected no error, got %v", err)
 	}
@@ -103,7 +103,7 @@ func TestCreateTestSess_WithIntegers(t *testing.T) {
 	}
 	svc := service.NewTestSessionService(repo)
 
-	sess, err := svc.CreateTestSess(&model.User{ID: 1}, true)
+	sess, err := svc.CreateTestSess("sub-1", true)
 	if err != nil {
 		t.Fatalf("expected no error, got %v", err)
 	}
@@ -129,7 +129,7 @@ func TestCreateTestSess_SessionProblemsLinkedToSession(t *testing.T) {
 	}
 	svc := service.NewTestSessionService(repo)
 
-	sess, err := svc.CreateTestSess(&model.User{ID: 5}, false)
+	sess, err := svc.CreateTestSess("sub-5", false)
 	if err != nil {
 		t.Fatalf("expected no error, got %v", err)
 	}
@@ -148,7 +148,7 @@ func TestCreateTestSess_SaveSessionError(t *testing.T) {
 	}
 	svc := service.NewTestSessionService(repo)
 
-	_, err := svc.CreateTestSess(&model.User{ID: 1}, false)
+	_, err := svc.CreateTestSess("sub-1", false)
 	if err == nil {
 		t.Error("expected error, got nil")
 	}
@@ -166,7 +166,7 @@ func TestCreateTestSess_FindProblemsError(t *testing.T) {
 	}
 	svc := service.NewTestSessionService(repo)
 
-	_, err := svc.CreateTestSess(&model.User{ID: 1}, false)
+	_, err := svc.CreateTestSess("sub-1", false)
 	if err == nil {
 		t.Error("expected error, got nil")
 	}
@@ -187,7 +187,7 @@ func TestCreateTestSess_SaveSessionProblemsError(t *testing.T) {
 	}
 	svc := service.NewTestSessionService(repo)
 
-	_, err := svc.CreateTestSess(&model.User{ID: 1}, false)
+	_, err := svc.CreateTestSess("sub-1", false)
 	if err == nil {
 		t.Error("expected error, got nil")
 	}

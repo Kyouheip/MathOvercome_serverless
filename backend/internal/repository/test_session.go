@@ -17,7 +17,7 @@ type dynamoSession struct {
 	GSI1PK          string `dynamodbav:"gsi1pk"`
 	GSI1SK          string `dynamodbav:"gsi1sk"`
 	ID              uint64 `dynamodbav:"id"`
-	OwnerID         uint64 `dynamodbav:"owner_id"`
+	OwnerID         string `dynamodbav:"owner_id"` // Cognito sub
 	IncludeIntegers bool   `dynamodbav:"include_integers"`
 	StartTime       string `dynamodbav:"start_time"`
 }
@@ -29,7 +29,7 @@ func (r *Repository) SaveTestSession(session *model.TestSession) error {
 	ds := dynamoSession{
 		PK:              fmt.Sprintf("SESSION#%d", session.ID),
 		SK:              "#METADATA",
-		GSI1PK:          fmt.Sprintf("USER#%d", session.UserID),
+		GSI1PK:          fmt.Sprintf("USER#%s", session.UserID),
 		GSI1SK:          fmt.Sprintf("SESSION#%d", session.ID),
 		ID:              session.ID,
 		OwnerID:         session.UserID,

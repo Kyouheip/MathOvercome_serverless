@@ -28,6 +28,14 @@ services:
       - ./db/dynamodb:/dynamodb
     entrypoint: ["/bin/sh", "/dynamodb/init.sh"]
 
+  cognito-local:
+    image: jagregory/cognito-local:latest
+    container_name: mathovercome-cognito
+    ports:
+      - "9229:9229"
+    volumes:
+      - cognito-data:/.cognito
+
   backend:
     build:
       context: ./backend
@@ -42,11 +50,16 @@ services:
       AWS_REGION: ${AWS_REGION}
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
-      SESSION_SECRET: ${SESSION_SECRET}
+      APP_ENV: local
       PORT: "8080"
+      COGNITO_ENDPOINT: http://cognito-local:9229
+      COGNITO_USER_POOL_ID: ${COGNITO_USER_POOL_ID}
+      COGNITO_CLIENT_ID: ${COGNITO_CLIENT_ID}
     depends_on:
       dynamodb-setup:
         condition: service_completed_successfully
+      cognito-local:
+        condition: service_started
     restart: on-failure
 
   frontend:
@@ -63,3 +76,4 @@ services:
 
 volumes:
   dynamodb-data:
+  cognito-data:

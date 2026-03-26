@@ -17,9 +17,9 @@ func NewTestSessionService(r repository.TestSessionRepo) *TestSessionService {
 	return &TestSessionService{repo: r}
 }
 
-func (s *TestSessionService) CreateTestSess(user *model.User, includeIntegers bool) (*model.TestSession, error) {
+func (s *TestSessionService) CreateTestSess(userSub string, includeIntegers bool) (*model.TestSession, error) {
 	session := model.TestSession{
-		UserID:          user.ID,
+		UserID:          userSub,
 		IncludeIntegers: includeIntegers,
 	}
 

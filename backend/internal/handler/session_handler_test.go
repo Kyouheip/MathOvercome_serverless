@@ -8,8 +8,6 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/gin-contrib/sessions"
-	"github.com/gin-contrib/sessions/cookie"
 	"github.com/gin-gonic/gin"
 
 	"github.com/Kyouheip/MathOvercome_serverless/internal/apperr"
@@ -22,13 +20,13 @@ import (
 // --- モック実装 ---
 
 type mockTestSessionService struct {
-	createTestSessFn func(user *model.User, includeIntegers bool) (*model.TestSession, error)
+	createTestSessFn func(userSub string, includeIntegers bool) (*model.TestSession, error)
 	getProblemFn     func(sessionID uint64, idx int) (*dto.SessionProblem, error)
 	submitAnswerFn   func(sessionID uint64, idx int, choiceID *int64) error
 }
 
-func (m *mockTestSessionService) CreateTestSess(user *model.User, includeIntegers bool) (*model.TestSession, error) {
-	return m.createTestSessFn(user, includeIntegers)
+func (m *mockTestSessionService) CreateTestSess(userSub string, includeIntegers bool) (*model.TestSession, error) {
+	return m.createTestSessFn(userSub, includeIntegers)
 }
 
 func (m *mockTestSessionService) GetProblem(sessionID uint64, idx int) (*dto.SessionProblem, error) {
@@ -48,25 +46,14 @@ func (m *mockMypageService) GetUserData(user *model.User) (*dto.User, error) {
 }
 
 // newSessionEngine はテスト用エンジンを作成する。
+// userSub が空でない場合、X-User-Sub ヘッダーをリクエストにセットするミドルウェアを追加する。
 func newSessionEngine(
 	ts service.TestSessionServicer,
 	ms service.MypageServicer,
-	sessionVals map[string]any,
+	userSub string,
 ) *gin.Engine {
 	gin.SetMode(gin.TestMode)
 	r := gin.New()
-	store := cookie.NewStore([]byte("test-secret"))
-	r.Use(sessions.Sessions("session", store))
-
-	if len(sessionVals) > 0 {
-		r.Use(func(c *gin.Context) {
-			sess := sessions.Default(c)
-			for k, v := range sessionVals {
-				sess.Set(k, v)
-			}
-			c.Next()
-		})
-	}
 
 	h := handler.NewSessionHandler(ts, ms)
 	r.POST("/session/test", h.CreateTestSess)
@@ -76,10 +63,14 @@ func newSessionEngine(
 	return r
 }
 
+func addUserSub(req *http.Request, sub string) {
+	req.Header.Set("X-User-Sub", sub)
+}
+
 // --- CreateTestSess ---
 
 func TestCreateTestSess_Unauthorized(t *testing.T) {
-	r := newSessionEngine(nil, nil, nil)
+	r := newSessionEngine(nil, nil, "")
 	w := httptest.NewRecorder()
 	req := httptest.NewRequest(http.MethodPost, "/session/test", nil)
 	r.ServeHTTP(w, req)
@@ -89,16 +80,16 @@ func TestCreateTestSess_Unauthorized(t *testing.T) {
 }
 
 func TestCreateTestSess_Success(t *testing.T) {
-	user := &model.User{ID: 1}
 	ts := &mockTestSessionService{
-		createTestSessFn: func(u *model.User, includeIntegers bool) (*model.TestSession, error) {
-			return &model.TestSession{ID: 42, UserID: u.ID}, nil
+		createTestSessFn: func(userSub string, includeIntegers bool) (*model.TestSession, error) {
+			return &model.TestSession{ID: 42, UserID: userSub}, nil
 		},
 	}
-	r := newSessionEngine(ts, nil, map[string]any{"user": user})
+	r := newSessionEngine(ts, nil, "sub-1")
 
 	w := httptest.NewRecorder()
 	req := httptest.NewRequest(http.MethodPost, "/session/test", nil)
+	addUserSub(req, "sub-1")
 	r.ServeHTTP(w, req)
 	if w.Code != http.StatusCreated {
 		t.Errorf("expected 201, got %d", w.Code)
@@ -106,16 +97,16 @@ func TestCreateTestSess_Success(t *testing.T) {
 }
 
 func TestCreateTestSess_ServiceError(t *testing.T) {
-	user := &model.User{ID: 1}
 	ts := &mockTestSessionService{
-		createTestSessFn: func(u *model.User, includeIntegers bool) (*model.TestSession, error) {
+		createTestSessFn: func(userSub string, includeIntegers bool) (*model.TestSession, error) {
 			return nil, errors.New("db error")
 		},
 	}
-	r := newSessionEngine(ts, nil, map[string]any{"user": user})
+	r := newSessionEngine(ts, nil, "sub-1")
 
 	w := httptest.NewRecorder()
 	req := httptest.NewRequest(http.MethodPost, "/session/test", nil)
+	addUserSub(req, "sub-1")
 	r.ServeHTTP(w, req)
 	if w.Code != http.StatusInternalServerError {
 		t.Errorf("expected 500, got %d", w.Code)
@@ -125,7 +116,7 @@ func TestCreateTestSess_ServiceError(t *testing.T) {
 // --- ViewOneProblem ---
 
 func TestViewOneProblem_Unauthorized(t *testing.T) {
-	r := newSessionEngine(nil, nil, nil)
+	r := newSessionEngine(nil, nil, "")
 	w := httptest.NewRecorder()
 	req := httptest.NewRequest(http.MethodGet, "/session/current/problems/0", nil)
 	r.ServeHTTP(w, req)
@@ -134,12 +125,11 @@ func TestViewOneProblem_Unauthorized(t *testing.T) {
 	}
 }
 
-func TestViewOneProblem_NoCurrentSession(t *testing.T) {
-	user := &model.User{ID: 1}
-	r := newSessionEngine(nil, nil, map[string]any{"user": user})
-
+func TestViewOneProblem_NoSessionID(t *testing.T) {
+	r := newSessionEngine(nil, nil, "")
 	w := httptest.NewRecorder()
 	req := httptest.NewRequest(http.MethodGet, "/session/current/problems/0", nil)
+	addUserSub(req, "sub-1")
 	r.ServeHTTP(w, req)
 	if w.Code != http.StatusBadRequest {
 		t.Errorf("expected 400, got %d", w.Code)
@@ -147,20 +137,16 @@ func TestViewOneProblem_NoCurrentSession(t *testing.T) {
 }
 
 func TestViewOneProblem_OutOfRange(t *testing.T) {
-	user := &model.User{ID: 1}
-	var sessionID uint64 = 10
 	ts := &mockTestSessionService{
 		getProblemFn: func(sID uint64, idx int) (*dto.SessionProblem, error) {
 			return nil, apperr.ErrOutOfRange
 		},
 	}
-	r := newSessionEngine(ts, nil, map[string]any{
-		"user":             user,
-		"currentSessionId": sessionID,
-	})
+	r := newSessionEngine(ts, nil, "sub-1")
 
 	w := httptest.NewRecorder()
-	req := httptest.NewRequest(http.MethodGet, "/session/current/problems/10", nil)
+	req := httptest.NewRequest(http.MethodGet, "/session/current/problems/10?sessionId=10", nil)
+	addUserSub(req, "sub-1")
 	r.ServeHTTP(w, req)
 	if w.Code != http.StatusBadRequest {
 		t.Errorf("expected 400, got %d", w.Code)
@@ -168,8 +154,6 @@ func TestViewOneProblem_OutOfRange(t *testing.T) {
 }
 
 func TestViewOneProblem_Success(t *testing.T) {
-	user := &model.User{ID: 1}
-	var sessionID uint64 = 10
 	choiceID := int64(5)
 
 	ts := &mockTestSessionService{
@@ -187,13 +171,11 @@ func TestViewOneProblem_Success(t *testing.T) {
 			}, nil
 		},
 	}
-	r := newSessionEngine(ts, nil, map[string]any{
-		"user":             user,
-		"currentSessionId": sessionID,
-	})
+	r := newSessionEngine(ts, nil, "sub-1")
 
 	w := httptest.NewRecorder()
-	req := httptest.NewRequest(http.MethodGet, "/session/current/problems/0", nil)
+	req := httptest.NewRequest(http.MethodGet, "/session/current/problems/0?sessionId=10", nil)
+	addUserSub(req, "sub-1")
 	r.ServeHTTP(w, req)
 
 	if w.Code != http.StatusOK {
@@ -220,7 +202,7 @@ func TestViewOneProblem_Success(t *testing.T) {
 // --- SubmitAnswer ---
 
 func TestSubmitAnswer_Unauthorized(t *testing.T) {
-	r := newSessionEngine(nil, nil, nil)
+	r := newSessionEngine(nil, nil, "")
 	w := httptest.NewRecorder()
 	req := httptest.NewRequest(http.MethodPost, "/session/current/problems/0/answer", nil)
 	r.ServeHTTP(w, req)
@@ -230,22 +212,18 @@ func TestSubmitAnswer_Unauthorized(t *testing.T) {
 }
 
 func TestSubmitAnswer_NullAnswer(t *testing.T) {
-	user := &model.User{ID: 1}
-	var sessionID uint64 = 10
 	ts := &mockTestSessionService{
 		submitAnswerFn: func(sID uint64, idx int, choiceID *int64) error {
 			return nil
 		},
 	}
-	r := newSessionEngine(ts, nil, map[string]any{
-		"user":             user,
-		"currentSessionId": sessionID,
-	})
+	r := newSessionEngine(ts, nil, "sub-1")
 
 	body, _ := json.Marshal(dto.AnswerRequest{SelectedChoiceID: nil})
 	w := httptest.NewRecorder()
-	req := httptest.NewRequest(http.MethodPost, "/session/current/problems/0/answer", bytes.NewReader(body))
+	req := httptest.NewRequest(http.MethodPost, "/session/current/problems/0/answer?sessionId=10", bytes.NewReader(body))
 	req.Header.Set("Content-Type", "application/json")
+	addUserSub(req, "sub-1")
 	r.ServeHTTP(w, req)
 
 	if w.Code != http.StatusNoContent {
@@ -254,23 +232,19 @@ func TestSubmitAnswer_NullAnswer(t *testing.T) {
 }
 
 func TestSubmitAnswer_WithChoice(t *testing.T) {
-	user := &model.User{ID: 1}
-	var sessionID uint64 = 10
 	ts := &mockTestSessionService{
 		submitAnswerFn: func(sID uint64, idx int, choiceID *int64) error {
 			return nil
 		},
 	}
-	r := newSessionEngine(ts, nil, map[string]any{
-		"user":             user,
-		"currentSessionId": sessionID,
-	})
+	r := newSessionEngine(ts, nil, "sub-1")
 
 	choiceID := int64(5)
 	body, _ := json.Marshal(dto.AnswerRequest{SelectedChoiceID: &choiceID})
 	w := httptest.NewRecorder()
-	req := httptest.NewRequest(http.MethodPost, "/session/current/problems/0/answer", bytes.NewReader(body))
+	req := httptest.NewRequest(http.MethodPost, "/session/current/problems/0/answer?sessionId=10", bytes.NewReader(body))
 	req.Header.Set("Content-Type", "application/json")
+	addUserSub(req, "sub-1")
 	r.ServeHTTP(w, req)
 
 	if w.Code != http.StatusNoContent {
@@ -279,22 +253,18 @@ func TestSubmitAnswer_WithChoice(t *testing.T) {
 }
 
 func TestSubmitAnswer_OutOfRange(t *testing.T) {
-	user := &model.User{ID: 1}
-	var sessionID uint64 = 10
 	ts := &mockTestSessionService{
 		submitAnswerFn: func(sID uint64, idx int, choiceID *int64) error {
 			return apperr.ErrOutOfRange
 		},
 	}
-	r := newSessionEngine(ts, nil, map[string]any{
-		"user":             user,
-		"currentSessionId": sessionID,
-	})
+	r := newSessionEngine(ts, nil, "sub-1")
 
 	body, _ := json.Marshal(dto.AnswerRequest{SelectedChoiceID: nil})
 	w := httptest.NewRecorder()
-	req := httptest.NewRequest(http.MethodPost, "/session/current/problems/5/answer", bytes.NewReader(body))
+	req := httptest.NewRequest(http.MethodPost, "/session/current/problems/5/answer?sessionId=10", bytes.NewReader(body))
 	req.Header.Set("Content-Type", "application/json")
+	addUserSub(req, "sub-1")
 	r.ServeHTTP(w, req)
 
 	if w.Code != http.StatusBadRequest {
@@ -305,7 +275,7 @@ func TestSubmitAnswer_OutOfRange(t *testing.T) {
 // --- GetMypage ---
 
 func TestGetMypage_Unauthorized(t *testing.T) {
-	r := newSessionEngine(nil, nil, nil)
+	r := newSessionEngine(nil, nil, "")
 	w := httptest.NewRecorder()
 	req := httptest.NewRequest(http.MethodGet, "/session/mypage", nil)
 	r.ServeHTTP(w, req)
@@ -315,16 +285,17 @@ func TestGetMypage_Unauthorized(t *testing.T) {
 }
 
 func TestGetMypage_Success(t *testing.T) {
-	user := &model.User{ID: 1, UserName: "TestUser"}
 	ms := &mockMypageService{
 		getUserDataFn: func(u *model.User) (*dto.User, error) {
 			return &dto.User{UserName: u.UserName, TestSessDtos: []dto.TestSession{}}, nil
 		},
 	}
-	r := newSessionEngine(nil, ms, map[string]any{"user": user})
+	r := newSessionEngine(nil, ms, "sub-1")
 
 	w := httptest.NewRecorder()
 	req := httptest.NewRequest(http.MethodGet, "/session/mypage", nil)
+	req.Header.Set("X-User-Sub", "sub-1")
+	req.Header.Set("X-User-Name", "TestUser")
 	r.ServeHTTP(w, req)
 
 	if w.Code != http.StatusOK {
@@ -340,16 +311,16 @@ func TestGetMypage_Success(t *testing.T) {
 }
 
 func TestGetMypage_ServiceError(t *testing.T) {
-	user := &model.User{ID: 1}
 	ms := &mockMypageService{
 		getUserDataFn: func(u *model.User) (*dto.User, error) {
 			return nil, errors.New("db error")
 		},
 	}
-	r := newSessionEngine(nil, ms, map[string]any{"user": user})
+	r := newSessionEngine(nil, ms, "sub-1")
 
 	w := httptest.NewRecorder()
 	req := httptest.NewRequest(http.MethodGet, "/session/mypage", nil)
+	addUserSub(req, "sub-1")
 	r.ServeHTTP(w, req)
 	if w.Code != http.StatusInternalServerError {
 		t.Errorf("expected 500, got %d", w.Code)

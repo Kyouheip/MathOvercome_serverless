@@ -10,15 +10,14 @@ import (
 	"github.com/Kyouheip/MathOvercome_serverless/internal/service"
 )
 
-// mockMypageRepo は repository.MypageRepo のテスト用実装。
 type mockMypageRepo struct {
-	getSessionProblemsRawFn func(userID uint64) ([]repository.SessionProblemRow, error)
+	getSessionProblemsRawFn func(userSub string) ([]repository.SessionProblemRow, error)
 	getCategoryStatsFn      func(sessionID uint64) ([]repository.CategoryStats, error)
 	getWeakCategoriesFn     func(sessionID uint64) ([]string, error)
 }
 
-func (m *mockMypageRepo) GetSessionProblemsRaw(userID uint64) ([]repository.SessionProblemRow, error) {
-	return m.getSessionProblemsRawFn(userID)
+func (m *mockMypageRepo) GetSessionProblemsRaw(userSub string) ([]repository.SessionProblemRow, error) {
+	return m.getSessionProblemsRawFn(userSub)
 }
 
 func (m *mockMypageRepo) GetCategoryStats(sessionID uint64) ([]repository.CategoryStats, error) {
@@ -33,7 +32,7 @@ func (m *mockMypageRepo) GetWeakCategories(sessionID uint64) ([]string, error) {
 
 func TestGetUserData_NoSessions(t *testing.T) {
 	repo := &mockMypageRepo{
-		getSessionProblemsRawFn: func(userID uint64) ([]repository.SessionProblemRow, error) {
+		getSessionProblemsRawFn: func(userSub string) ([]repository.SessionProblemRow, error) {
 			return []repository.SessionProblemRow{}, nil
 		},
 		getCategoryStatsFn:  func(sessionID uint64) ([]repository.CategoryStats, error) { return nil, nil },
@@ -41,7 +40,7 @@ func TestGetUserData_NoSessions(t *testing.T) {
 	}
 	svc := service.NewMypageService(repo)
 
-	result, err := svc.GetUserData(&model.User{ID: 1, UserName: "TestUser"})
+	result, err := svc.GetUserData(&model.User{Sub: "sub-1", UserName: "TestUser"})
 	if err != nil {
 		t.Fatalf("expected no error, got %v", err)
 	}
@@ -57,7 +56,7 @@ func TestGetUserData_SingleSession_CountsCorrect(t *testing.T) {
 	now := time.Date(2024, 1, 15, 10, 0, 0, 0, time.UTC)
 
 	repo := &mockMypageRepo{
-		getSessionProblemsRawFn: func(userID uint64) ([]repository.SessionProblemRow, error) {
+		getSessionProblemsRawFn: func(userSub string) ([]repository.SessionProblemRow, error) {
 			return []repository.SessionProblemRow{
 				{SessionID: 1, StartTime: now, IsCorrect: true, CategoryName: "足し算"},
 				{SessionID: 1, StartTime: now, IsCorrect: false, CategoryName: "引き算"},
@@ -77,7 +76,7 @@ func TestGetUserData_SingleSession_CountsCorrect(t *testing.T) {
 	}
 	svc := service.NewMypageService(repo)
 
-	result, err := svc.GetUserData(&model.User{ID: 1, UserName: "TestUser"})
+	result, err := svc.GetUserData(&model.User{Sub: "sub-1", UserName: "TestUser"})
 	if err != nil {
 		t.Fatalf("expected no error, got %v", err)
 	}
@@ -103,8 +102,7 @@ func TestGetUserData_MultipleSessions_OrderPreserved(t *testing.T) {
 	now := time.Now()
 
 	repo := &mockMypageRepo{
-		getSessionProblemsRawFn: func(userID uint64) ([]repository.SessionProblemRow, error) {
-			// セッション2 が先に来る (DESC順)
+		getSessionProblemsRawFn: func(userSub string) ([]repository.SessionProblemRow, error) {
 			return []repository.SessionProblemRow{
 				{SessionID: 2, StartTime: now, IsCorrect: true, CategoryName: "足し算"},
 				{SessionID: 1, StartTime: now, IsCorrect: false, CategoryName: "引き算"},
@@ -115,14 +113,13 @@ func TestGetUserData_MultipleSessions_OrderPreserved(t *testing.T) {
 	}
 	svc := service.NewMypageService(repo)
 
-	result, err := svc.GetUserData(&model.User{ID: 1, UserName: "TestUser"})
+	result, err := svc.GetUserData(&model.User{Sub: "sub-1", UserName: "TestUser"})
 	if err != nil {
 		t.Fatalf("expected no error, got %v", err)
 	}
 	if len(result.TestSessDtos) != 2 {
 		t.Fatalf("expected 2 sessions, got %d", len(result.TestSessDtos))
 	}
-	// 挿入順が維持されること (セッション2 → セッション1)
 	if result.TestSessDtos[0].SessionID != 2 {
 		t.Errorf("expected first session ID = 2, got %d", result.TestSessDtos[0].SessionID)
 	}
@@ -133,13 +130,13 @@ func TestGetUserData_MultipleSessions_OrderPreserved(t *testing.T) {
 
 func TestGetUserData_GetSessionProblemsRawError(t *testing.T) {
 	repo := &mockMypageRepo{
-		getSessionProblemsRawFn: func(userID uint64) ([]repository.SessionProblemRow, error) {
+		getSessionProblemsRawFn: func(userSub string) ([]repository.SessionProblemRow, error) {
 			return nil, errors.New("db error")
 		},
 	}
 	svc := service.NewMypageService(repo)
 
-	_, err := svc.GetUserData(&model.User{ID: 1})
+	_, err := svc.GetUserData(&model.User{Sub: "sub-1"})
 	if err == nil {
 		t.Error("expected error, got nil")
 	}
@@ -148,7 +145,7 @@ func TestGetUserData_GetSessionProblemsRawError(t *testing.T) {
 func TestGetUserData_GetCategoryStatsError(t *testing.T) {
 	now := time.Now()
 	repo := &mockMypageRepo{
-		getSessionProblemsRawFn: func(userID uint64) ([]repository.SessionProblemRow, error) {
+		getSessionProblemsRawFn: func(userSub string) ([]repository.SessionProblemRow, error) {
 			return []repository.SessionProblemRow{
 				{SessionID: 1, StartTime: now, IsCorrect: true, CategoryName: "足し算"},
 			}, nil
@@ -159,7 +156,7 @@ func TestGetUserData_GetCategoryStatsError(t *testing.T) {
 	}
 	svc := service.NewMypageService(repo)
 
-	_, err := svc.GetUserData(&model.User{ID: 1})
+	_, err := svc.GetUserData(&model.User{Sub: "sub-1"})
 	if err == nil {
 		t.Error("expected error, got nil")
 	}
@@ -168,7 +165,7 @@ func TestGetUserData_GetCategoryStatsError(t *testing.T) {
 func TestGetUserData_GetWeakCategoriesError(t *testing.T) {
 	now := time.Now()
 	repo := &mockMypageRepo{
-		getSessionProblemsRawFn: func(userID uint64) ([]repository.SessionProblemRow, error) {
+		getSessionProblemsRawFn: func(userSub string) ([]repository.SessionProblemRow, error) {
 			return []repository.SessionProblemRow{
 				{SessionID: 1, StartTime: now, IsCorrect: true, CategoryName: "足し算"},
 			}, nil
@@ -182,7 +179,7 @@ func TestGetUserData_GetWeakCategoriesError(t *testing.T) {
 	}
 	svc := service.NewMypageService(repo)
 
-	_, err := svc.GetUserData(&model.User{ID: 1})
+	_, err := svc.GetUserData(&model.User{Sub: "sub-1"})
 	if err == nil {
 		t.Error("expected error, got nil")
 	}

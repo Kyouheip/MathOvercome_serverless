@@ -26,14 +26,14 @@ type SessionProblemRow struct {
 
 // GetSessionProblemsRaw はユーザーの全セッション×全SPを結合して返す。
 // セッションは降順（新しい順）、SP は昇順。
-func (r *Repository) GetSessionProblemsRaw(userID uint64) ([]SessionProblemRow, error) {
-	// GSI1: gsi1pk = USER#<userID> → セッション一覧を降順で取得
+func (r *Repository) GetSessionProblemsRaw(userSub string) ([]SessionProblemRow, error) {
+	// GSI1: gsi1pk = USER#<sub> → セッション一覧を降順で取得
 	sessOut, err := r.client.Query(bg(), &dynamodb.QueryInput{
 		TableName:              aws.String(tableName()),
 		IndexName:              aws.String("GSI1"),
 		KeyConditionExpression: aws.String("gsi1pk = :gsi1pk"),
 		ExpressionAttributeValues: map[string]types.AttributeValue{
-			":gsi1pk": &types.AttributeValueMemberS{Value: fmt.Sprintf("USER#%d", userID)},
+			":gsi1pk": &types.AttributeValueMemberS{Value: fmt.Sprintf("USER#%s", userSub)},
 		},
 		ScanIndexForward: aws.Bool(false), // 降順
 	})
