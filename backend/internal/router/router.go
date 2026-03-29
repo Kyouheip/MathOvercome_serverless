@@ -23,9 +23,8 @@ func New(client *dynamodb.Client) *gin.Engine {
 
 	r := gin.Default()
 
-	allowOrigin := "https://d4yqk70vf657o.cloudfront.net"
+	allowOrigin := os.Getenv("ALLOW_ORIGIN")
 	if os.Getenv("APP_ENV") == "local" {
-		allowOrigin = "http://localhost:3000"
 		r.Use(middleware.LocalAuthMiddleware())
 	}
 

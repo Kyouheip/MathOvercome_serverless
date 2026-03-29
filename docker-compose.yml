@@ -42,7 +42,8 @@ services:
       AWS_REGION: ${AWS_REGION}
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
-      APP_ENV: local
+      APP_ENV: ${APP_ENV}
+      ALLOW_ORIGIN: ${ALLOW_ORIGIN}
       PORT: "8080"
     depends_on:
       dynamodb-setup:
