@@ -18,6 +18,4 @@ type TestSessionRepo interface {
 // MypageRepo は MypageService が使うリポジトリ操作を定義する。
 type MypageRepo interface {
 	GetSessionProblemsRaw(userSub string) ([]SessionProblemRow, error)
-	GetCategoryStats(sessionID uint64) ([]CategoryStats, error)
-	GetWeakCategories(sessionID uint64) ([]string, error)
 }

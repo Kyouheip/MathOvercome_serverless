@@ -28,6 +28,11 @@ func (s *MypageService) GetUserData(user *model.User) (*dto.User, error) {
 	sessionMap := make(map[uint64]*dto.TestSession)
 	var sessionIDs []uint64
 
+	// catStats[sessionID][categoryName] = {total, correct}
+	type catStat struct{ total, correct int }
+	catStats := make(map[uint64]map[string]*catStat)
+	catOrder := make(map[uint64][]string)
+
 	for _, row := range rows {
 		if _, exists := sessionMap[row.SessionID]; !exists {
 			d := &dto.TestSession{
@@ -36,6 +41,7 @@ func (s *MypageService) GetUserData(user *model.User) (*dto.User, error) {
 			}
 			sessionMap[row.SessionID] = d
 			sessionIDs = append(sessionIDs, row.SessionID)
+			catStats[row.SessionID] = make(map[string]*catStat)
 		}
 
 		sessionMap[row.SessionID].ProbCategoryDtos = append(
@@ -45,6 +51,16 @@ func (s *MypageService) GetUserData(user *model.User) (*dto.User, error) {
 				CategoryName: row.CategoryName,
 			},
 		)
+
+		sm := catStats[row.SessionID]
+		if _, exists := sm[row.CategoryName]; !exists {
+			sm[row.CategoryName] = &catStat{}
+			catOrder[row.SessionID] = append(catOrder[row.SessionID], row.CategoryName)
+		}
+		sm[row.CategoryName].total++
+		if row.IsCorrect {
+			sm[row.CategoryName].correct++
+		}
 	}
 
 	finalSessions := make([]dto.TestSession, 0)
@@ -61,23 +77,36 @@ func (s *MypageService) GetUserData(user *model.User) (*dto.User, error) {
 		sess.Total = total
 		sess.CorrectCount = correct
 
-		stats, err := s.repo.GetCategoryStats(id)
-		if err != nil {
-			return nil, fmt.Errorf("get category stats for session %d: %w", id, err)
-		}
-		for _, st := range stats {
+		for _, name := range catOrder[id] {
+			st := catStats[id][name]
 			sess.CategoryDtos = append(sess.CategoryDtos, dto.Category{
-				CategoryName: st.Name,
-				Total:        st.TotalCount,
-				CorrectCount: st.CorrectCount,
+				CategoryName: name,
+				Total:        st.total,
+				CorrectCount: st.correct,
 			})
 		}
 
-		weak, err := s.repo.GetWeakCategories(id)
-		if err != nil {
-			return nil, fmt.Errorf("get weak categories for session %d: %w", id, err)
+		type weakCat struct {
+			name string
+			rate float64
 		}
-		sess.WeakCategories = weak
+		var weaks []weakCat
+		for _, name := range catOrder[id] {
+			st := catStats[id][name]
+			if st.total == 0 {
+				continue
+			}
+			rate := float64(st.correct) / float64(st.total)
+			if rate < 0.5 {
+				weaks = append(weaks, weakCat{name: name, rate: rate})
+			}
+		}
+		sort.Slice(weaks, func(i, j int) bool {
+			return weaks[i].rate < weaks[j].rate
+		})
+		for i := 0; i < len(weaks) && i < 2; i++ {
+			sess.WeakCategories = append(sess.WeakCategories, weaks[i].name)
+		}
 
 		finalSessions = append(finalSessions, *sess)
 	}

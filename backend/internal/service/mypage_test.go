@@ -12,20 +12,10 @@ import (
 
 type mockMypageRepo struct {
 	getSessionProblemsRawFn func(userSub string) ([]repository.SessionProblemRow, error)
-	getCategoryStatsFn      func(sessionID uint64) ([]repository.CategoryStats, error)
-	getWeakCategoriesFn     func(sessionID uint64) ([]string, error)
 }
 
 func (m *mockMypageRepo) GetSessionProblemsRaw(userSub string) ([]repository.SessionProblemRow, error) {
 	return m.getSessionProblemsRawFn(userSub)
-}
-
-func (m *mockMypageRepo) GetCategoryStats(sessionID uint64) ([]repository.CategoryStats, error) {
-	return m.getCategoryStatsFn(sessionID)
-}
-
-func (m *mockMypageRepo) GetWeakCategories(sessionID uint64) ([]string, error) {
-	return m.getWeakCategoriesFn(sessionID)
 }
 
 // --- GetUserData ---
@@ -35,8 +25,6 @@ func TestGetUserData_NoSessions(t *testing.T) {
 		getSessionProblemsRawFn: func(userSub string) ([]repository.SessionProblemRow, error) {
 			return []repository.SessionProblemRow{}, nil
 		},
-		getCategoryStatsFn:  func(sessionID uint64) ([]repository.CategoryStats, error) { return nil, nil },
-		getWeakCategoriesFn: func(sessionID uint64) ([]string, error) { return nil, nil },
 	}
 	svc := service.NewMypageService(repo)
 
@@ -62,16 +50,6 @@ func TestGetUserData_SingleSession_CountsCorrect(t *testing.T) {
 				{SessionID: 1, StartTime: now, IsCorrect: false, CategoryName: "引き算"},
 				{SessionID: 1, StartTime: now, IsCorrect: true, CategoryName: "掛け算"},
 			}, nil
-		},
-		getCategoryStatsFn: func(sessionID uint64) ([]repository.CategoryStats, error) {
-			return []repository.CategoryStats{
-				{Name: "足し算", TotalCount: 1, CorrectCount: 1},
-				{Name: "引き算", TotalCount: 1, CorrectCount: 0},
-				{Name: "掛け算", TotalCount: 1, CorrectCount: 1},
-			}, nil
-		},
-		getWeakCategoriesFn: func(sessionID uint64) ([]string, error) {
-			return []string{"引き算"}, nil
 		},
 	}
 	svc := service.NewMypageService(repo)
@@ -108,8 +86,6 @@ func TestGetUserData_MultipleSessions_OrderPreserved(t *testing.T) {
 				{SessionID: 1, StartTime: now, IsCorrect: false, CategoryName: "引き算"},
 			}, nil
 		},
-		getCategoryStatsFn:  func(sessionID uint64) ([]repository.CategoryStats, error) { return nil, nil },
-		getWeakCategoriesFn: func(sessionID uint64) ([]string, error) { return nil, nil },
 	}
 	svc := service.NewMypageService(repo)
 
@@ -131,49 +107,6 @@ func TestGetUserData_MultipleSessions_OrderPreserved(t *testing.T) {
 func TestGetUserData_GetSessionProblemsRawError(t *testing.T) {
 	repo := &mockMypageRepo{
 		getSessionProblemsRawFn: func(userSub string) ([]repository.SessionProblemRow, error) {
-			return nil, errors.New("db error")
-		},
-	}
-	svc := service.NewMypageService(repo)
-
-	_, err := svc.GetUserData(&model.User{Sub: "sub-1"})
-	if err == nil {
-		t.Error("expected error, got nil")
-	}
-}
-
-func TestGetUserData_GetCategoryStatsError(t *testing.T) {
-	now := time.Now()
-	repo := &mockMypageRepo{
-		getSessionProblemsRawFn: func(userSub string) ([]repository.SessionProblemRow, error) {
-			return []repository.SessionProblemRow{
-				{SessionID: 1, StartTime: now, IsCorrect: true, CategoryName: "足し算"},
-			}, nil
-		},
-		getCategoryStatsFn: func(sessionID uint64) ([]repository.CategoryStats, error) {
-			return nil, errors.New("db error")
-		},
-	}
-	svc := service.NewMypageService(repo)
-
-	_, err := svc.GetUserData(&model.User{Sub: "sub-1"})
-	if err == nil {
-		t.Error("expected error, got nil")
-	}
-}
-
-func TestGetUserData_GetWeakCategoriesError(t *testing.T) {
-	now := time.Now()
-	repo := &mockMypageRepo{
-		getSessionProblemsRawFn: func(userSub string) ([]repository.SessionProblemRow, error) {
-			return []repository.SessionProblemRow{
-				{SessionID: 1, StartTime: now, IsCorrect: true, CategoryName: "足し算"},
-			}, nil
-		},
-		getCategoryStatsFn: func(sessionID uint64) ([]repository.CategoryStats, error) {
-			return nil, nil
-		},
-		getWeakCategoriesFn: func(sessionID uint64) ([]string, error) {
 			return nil, errors.New("db error")
 		},
 	}
