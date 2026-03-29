@@ -38,7 +38,7 @@ func (h *SessionHandler) CreateTestSess(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusCreated, gin.H{"sessionId": testSess.ID})
+	c.JSON(http.StatusCreated, gin.H{"sessionId": strconv.FormatUint(testSess.ID, 10)})
 }
 
 // GET /session/current/problems/:idx
