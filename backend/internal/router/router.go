@@ -23,16 +23,19 @@ func New(client *dynamodb.Client) *gin.Engine {
 
 	r := gin.Default()
 
+	allowOrigin := "https://d4yqk70vf657o.cloudfront.net"
 	if os.Getenv("APP_ENV") == "local" {
-		r.Use(cors.New(cors.Config{
-			AllowOrigins:     []string{"http://localhost:3000"},
-			AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
-			AllowHeaders:     []string{"Origin", "Content-Type", "Authorization", "X-User-Sub", "X-User-Name"},
-			AllowCredentials: true,
-			MaxAge:           12 * time.Hour,
-		}))
+		allowOrigin = "http://localhost:3000"
 		r.Use(middleware.LocalAuthMiddleware())
 	}
+
+	r.Use(cors.New(cors.Config{
+		AllowOrigins:     []string{allowOrigin},
+		AllowMethods:     []string{"GET", "POST", "OPTIONS"},
+		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"},
+		AllowCredentials: true,
+		MaxAge:           12 * time.Hour,
+	}))
 
 	sess := r.Group("/session")
 	{
