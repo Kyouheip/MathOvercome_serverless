@@ -2,7 +2,7 @@
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { signIn } from "aws-amplify/auth";
+import { signIn, signOut } from "aws-amplify/auth";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -14,6 +14,7 @@ export default function LoginPage() {
     e.preventDefault();
     setError("");
     try {
+      await signOut().catch(() => {});
       await signIn({ username: email, password });
       router.push("/mypage");
     } catch (err) {
