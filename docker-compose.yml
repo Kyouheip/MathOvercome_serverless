@@ -54,11 +54,12 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile
-      args:
-        NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL}
-        NEXT_PUBLIC_COGNITO_USER_POOL_ID: ${NEXT_PUBLIC_COGNITO_USER_POOL_ID}
-        NEXT_PUBLIC_COGNITO_CLIENT_ID: ${NEXT_PUBLIC_COGNITO_CLIENT_ID}
+      target: dev
     container_name: mathovercome-frontend
+    environment:
+      NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL}
+      NEXT_PUBLIC_COGNITO_USER_POOL_ID: ${NEXT_PUBLIC_COGNITO_USER_POOL_ID}
+      NEXT_PUBLIC_COGNITO_CLIENT_ID: ${NEXT_PUBLIC_COGNITO_CLIENT_ID}
     ports:
       - "3000:3000"
     depends_on:
