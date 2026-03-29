@@ -57,7 +57,15 @@ func (s *TestSessionService) CreateTestSess(userSub string, includeIntegers bool
 	return &session, nil
 }
 
-func (s *TestSessionService) GetProblem(sessionID uint64, idx int) (*dto.SessionProblem, error) {
+func (s *TestSessionService) GetProblem(sessionID uint64, userSub string, idx int) (*dto.SessionProblem, error) {
+	sess, err := s.repo.FindTestSession(sessionID)
+	if err != nil {
+		return nil, err
+	}
+	if sess.UserID != userSub {
+		return nil, apperr.ErrForbidden
+	}
+
 	total, err := s.repo.CountSessionProblems(sessionID)
 	if err != nil {
 		return nil, err
@@ -95,9 +103,17 @@ func (s *TestSessionService) GetProblem(sessionID uint64, idx int) (*dto.Session
 	}, nil
 }
 
-func (s *TestSessionService) SubmitAnswer(sessionID uint64, idx int, choiceID *int64) error {
+func (s *TestSessionService) SubmitAnswer(sessionID uint64, userSub string, idx int, choiceID *int64) error {
 	if choiceID == nil {
 		return nil
+	}
+
+	sess, err := s.repo.FindTestSession(sessionID)
+	if err != nil {
+		return err
+	}
+	if sess.UserID != userSub {
+		return apperr.ErrForbidden
 	}
 
 	sps, err := s.repo.FindSessionProblemsBySessionID(sessionID)

@@ -21,20 +21,20 @@ import (
 
 type mockTestSessionService struct {
 	createTestSessFn func(userSub string, includeIntegers bool) (*model.TestSession, error)
-	getProblemFn     func(sessionID uint64, idx int) (*dto.SessionProblem, error)
-	submitAnswerFn   func(sessionID uint64, idx int, choiceID *int64) error
+	getProblemFn     func(sessionID uint64, userSub string, idx int) (*dto.SessionProblem, error)
+	submitAnswerFn   func(sessionID uint64, userSub string, idx int, choiceID *int64) error
 }
 
 func (m *mockTestSessionService) CreateTestSess(userSub string, includeIntegers bool) (*model.TestSession, error) {
 	return m.createTestSessFn(userSub, includeIntegers)
 }
 
-func (m *mockTestSessionService) GetProblem(sessionID uint64, idx int) (*dto.SessionProblem, error) {
-	return m.getProblemFn(sessionID, idx)
+func (m *mockTestSessionService) GetProblem(sessionID uint64, userSub string, idx int) (*dto.SessionProblem, error) {
+	return m.getProblemFn(sessionID, userSub, idx)
 }
 
-func (m *mockTestSessionService) SubmitAnswer(sessionID uint64, idx int, choiceID *int64) error {
-	return m.submitAnswerFn(sessionID, idx, choiceID)
+func (m *mockTestSessionService) SubmitAnswer(sessionID uint64, userSub string, idx int, choiceID *int64) error {
+	return m.submitAnswerFn(sessionID, userSub, idx, choiceID)
 }
 
 type mockMypageService struct {
@@ -138,7 +138,7 @@ func TestViewOneProblem_NoSessionID(t *testing.T) {
 
 func TestViewOneProblem_OutOfRange(t *testing.T) {
 	ts := &mockTestSessionService{
-		getProblemFn: func(sID uint64, idx int) (*dto.SessionProblem, error) {
+		getProblemFn: func(sID uint64, userSub string, idx int) (*dto.SessionProblem, error) {
 			return nil, apperr.ErrOutOfRange
 		},
 	}
@@ -157,7 +157,7 @@ func TestViewOneProblem_Success(t *testing.T) {
 	choiceID := int64(5)
 
 	ts := &mockTestSessionService{
-		getProblemFn: func(sID uint64, idx int) (*dto.SessionProblem, error) {
+		getProblemFn: func(sID uint64, userSub string, idx int) (*dto.SessionProblem, error) {
 			return &dto.SessionProblem{
 				ID:       1,
 				Question: "1+1=?",
@@ -213,7 +213,7 @@ func TestSubmitAnswer_Unauthorized(t *testing.T) {
 
 func TestSubmitAnswer_NullAnswer(t *testing.T) {
 	ts := &mockTestSessionService{
-		submitAnswerFn: func(sID uint64, idx int, choiceID *int64) error {
+		submitAnswerFn: func(sID uint64, userSub string, idx int, choiceID *int64) error {
 			return nil
 		},
 	}
@@ -233,7 +233,7 @@ func TestSubmitAnswer_NullAnswer(t *testing.T) {
 
 func TestSubmitAnswer_WithChoice(t *testing.T) {
 	ts := &mockTestSessionService{
-		submitAnswerFn: func(sID uint64, idx int, choiceID *int64) error {
+		submitAnswerFn: func(sID uint64, userSub string, idx int, choiceID *int64) error {
 			return nil
 		},
 	}
@@ -254,7 +254,7 @@ func TestSubmitAnswer_WithChoice(t *testing.T) {
 
 func TestSubmitAnswer_OutOfRange(t *testing.T) {
 	ts := &mockTestSessionService{
-		submitAnswerFn: func(sID uint64, idx int, choiceID *int64) error {
+		submitAnswerFn: func(sID uint64, userSub string, idx int, choiceID *int64) error {
 			return apperr.ErrOutOfRange
 		},
 	}

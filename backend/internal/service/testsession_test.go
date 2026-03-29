@@ -11,6 +11,7 @@ import (
 // mockTestSessionRepo は repository.TestSessionRepo のテスト用実装。
 type mockTestSessionRepo struct {
 	saveTestSessionFn                func(session *model.TestSession) error
+	findTestSessionFn                func(sessionID uint64) (*model.TestSession, error)
 	findProblemsPerCategoryFn        func(categoryIDs []int, countPerCategory int) ([]model.Problem, error)
 	saveSessionProblemsFn            func(sps []model.SessionProblem) error
 	countSessionProblemsFn           func(sessionID uint64) (int64, error)
@@ -22,6 +23,13 @@ type mockTestSessionRepo struct {
 
 func (m *mockTestSessionRepo) SaveTestSession(session *model.TestSession) error {
 	return m.saveTestSessionFn(session)
+}
+
+func (m *mockTestSessionRepo) FindTestSession(sessionID uint64) (*model.TestSession, error) {
+	if m.findTestSessionFn != nil {
+		return m.findTestSessionFn(sessionID)
+	}
+	return nil, nil
 }
 
 func (m *mockTestSessionRepo) FindProblemsPerCategory(categoryIDs []int, countPerCategory int) ([]model.Problem, error) {

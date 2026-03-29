@@ -1,5 +1,6 @@
 // /crs/app
 import "./globals.css";
+import AmplifyProvider from "@/components/AmplifyProvider";
 
 export const metadata = {
   title: "MathOvercome"
@@ -26,8 +27,10 @@ export default function RootLayout({ children }) {
           </div>
         </header>
 
-        <main>{children}</main>
-        
+        <main>
+          <AmplifyProvider>{children}</AmplifyProvider>
+        </main>
+
       </body>
     </html>
   );

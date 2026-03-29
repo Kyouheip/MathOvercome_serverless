@@ -5,6 +5,7 @@ import "github.com/Kyouheip/MathOvercome_serverless/internal/model"
 // TestSessionRepo は TestSessionService が使うリポジトリ操作を定義する。
 type TestSessionRepo interface {
 	SaveTestSession(session *model.TestSession) error
+	FindTestSession(sessionID uint64) (*model.TestSession, error)
 	FindProblemsPerCategory(categoryIDs []int, countPerCategory int) ([]model.Problem, error)
 	SaveSessionProblems(sps []model.SessionProblem) error
 	CountSessionProblems(sessionID uint64) (int64, error)

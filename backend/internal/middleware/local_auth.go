@@ -41,8 +41,8 @@ func LocalAuthMiddleware() gin.HandlerFunc {
 		if sub, ok := claims["sub"].(string); ok {
 			c.Request.Header.Set("X-User-Sub", sub)
 		}
-		if username, ok := claims["cognito:username"].(string); ok {
-			c.Request.Header.Set("X-User-Name", username)
+		if name, ok := claims["name"].(string); ok {
+			c.Request.Header.Set("X-User-Name", name)
 		}
 
 		c.Next()

@@ -1,95 +1,131 @@
 // /register/page.js
-"use client"
-import {useState} from "react";
-import {useRouter} from "next/navigation"
+"use client";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { signUp, confirmSignUp } from "aws-amplify/auth";
 
-export default function RegisterPage(){
-    const[userName,setUserName] = useState("");
-    const [userId,setUserId] = useState("");
-    const [password1,setPassword1] = useState("");
-    const[password2,setPassword2] = useState("");
-    const[error,setError] = useState("");
-    const router = useRouter();
+export default function RegisterPage() {
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [password2, setPassword2] = useState("");
+  const [confirmCode, setConfirmCode] = useState("");
+  const [step, setStep] = useState("register"); // "register" | "confirm"
+  const [error, setError] = useState("");
+  const router = useRouter();
 
-    const doRegister = async (e) => {
-        e.preventDefault();
-        setError("");
+  const doRegister = async (e) => {
+    e.preventDefault();
+    setError("");
 
-        const res = await fetch(
-            `${process.env.NEXT_PUBLIC_API_URL}/auth/register`,
-            {
-                method: "POST",
-                headers: {"Content-Type":"application/json"},
-                body: JSON.stringify({userName,userId,password1,password2}),
-            }
-        );
-
-        if(res.status === 201){
-            router.push("/login");
-        }else{
-            const msg = await res.text();
-            setError(msg || `エラー: ${res.status}`);
-        }
-    };
-
-    const handleBack = () => {
-        router.push("/login");
+    if (password !== password2) {
+      setError("パスワードが一致しません");
+      return;
     }
 
-    return(
-        <div className="container mt-4">
-            <h2 className="mb-3">新規登録</h2>
-            <form onSubmit = {doRegister}>
-            <div className="mb-3">
-              <label htmlFor="userId" className="form-label">ID</label>
-              <input
-                id="userId" //css
-                type="text"
-                className="form-control" //css
-                value={userId}
-                onChange={e => setUserId(e.target.value)}
-              />
-              </div>
+    try {
+      await signUp({
+        username: email,
+        password,
+        options: {
+          userAttributes: {
+            email,
+            name,
+          },
+        },
+      });
+      setStep("confirm");
+    } catch (err) {
+      setError(err.message || "登録に失敗しました");
+    }
+  };
 
-              <div className="mb-3">
-                <label htmlFor="userName" className="form-label">名前</label>
-                <input
-                    id="userName"
-                    type="text"
-                    className="form-control"
-                    value={userName}
-                    onChange={e => setUserName(e.target.value)}
-                />
-              </div>
-            
-              <div className="mb-3">
-                <label htmlFor="password1" className="form-label">パスワード</label>
-                <input
-                    id="password1"
-                    type="password"
-                    className="form-control"
-                    value={password1}
-                    onChange={e => setPassword1(e.target.value)}
-                />
-              </div>
-              
-              <div className="mb-3">
-              <label htmlFor="password2" className="form-label">パスワード確認</label>
-                <input
-                    id="password2"
-                    type="password"
-                    className="form-control"
-                    value={password2}
-                    onChange={e => setPassword2(e.target.value)}
-                />
-              </div>
-              
-            {error && <pre className="text-danger">{error}</pre>}
+  const doConfirm = async (e) => {
+    e.preventDefault();
+    setError("");
+    try {
+      await confirmSignUp({ username: email, confirmationCode: confirmCode });
+      router.push("/login");
+    } catch (err) {
+      setError(err.message || "確認に失敗しました");
+    }
+  };
 
-            <button type="submit" className="btn btn-primary me-2">登録</button>
-            <button type="button" className="btn btn-secondary" onClick={handleBack}>戻る</button>
-            </form>
-        </div>
+  if (step === "confirm") {
+    return (
+      <div className="container mt-4">
+        <h2 className="mb-3">メール確認</h2>
+        <p>{email} に確認コードを送信しました。</p>
+        <form onSubmit={doConfirm}>
+          <div className="mb-3">
+            <label htmlFor="confirmCode" className="form-label">確認コード</label>
+            <input
+              id="confirmCode"
+              type="text"
+              className="form-control"
+              value={confirmCode}
+              onChange={e => setConfirmCode(e.target.value)}
+            />
+          </div>
+          {error && <pre className="text-danger">{error}</pre>}
+          <button type="submit" className="btn btn-primary">確認</button>
+        </form>
+      </div>
     );
+  }
 
+  return (
+    <div className="container mt-4">
+      <h2 className="mb-3">新規登録</h2>
+      <form onSubmit={doRegister}>
+        <div className="mb-3">
+          <label htmlFor="email" className="form-label">メールアドレス</label>
+          <input
+            id="email"
+            type="email"
+            className="form-control"
+            value={email}
+            onChange={e => setEmail(e.target.value)}
+          />
+        </div>
+
+        <div className="mb-3">
+          <label htmlFor="name" className="form-label">名前</label>
+          <input
+            id="name"
+            type="text"
+            className="form-control"
+            value={name}
+            onChange={e => setName(e.target.value)}
+          />
+        </div>
+
+        <div className="mb-3">
+          <label htmlFor="password" className="form-label">パスワード</label>
+          <input
+            id="password"
+            type="password"
+            className="form-control"
+            value={password}
+            onChange={e => setPassword(e.target.value)}
+          />
+        </div>
+
+        <div className="mb-3">
+          <label htmlFor="password2" className="form-label">パスワード確認</label>
+          <input
+            id="password2"
+            type="password"
+            className="form-control"
+            value={password2}
+            onChange={e => setPassword2(e.target.value)}
+          />
+        </div>
+
+        {error && <pre className="text-danger">{error}</pre>}
+        <button type="submit" className="btn btn-primary me-2">登録</button>
+        <button type="button" className="btn btn-secondary" onClick={() => router.push("/login")}>戻る</button>
+      </form>
+    </div>
+  );
 }

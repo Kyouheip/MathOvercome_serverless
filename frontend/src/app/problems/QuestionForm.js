@@ -2,10 +2,11 @@
 'use client'
 import {useEffect, useState} from 'react'
 import { useRouter } from 'next/navigation'
-import { useErrorHandler } from "@/hooks/useErrorHandler"
+import { useErrorHandler } from "@/hooks/useErrorHandler";
 import ErrorMessage from '@/components/ErrorMessage';
+import { getAuthHeader } from "@/lib/auth";
 
-export default function QuestionForm({idx,choices,initialselectedId,total}){
+export default function QuestionForm({idx,sessionId,choices,initialselectedId,total}){
     const [selectedId,setSelectedId] = useState(initialselectedId ?? null);
     const router = useRouter();
     const [error,setError] = useState(null);
@@ -22,11 +23,13 @@ export default function QuestionForm({idx,choices,initialselectedId,total}){
         try{
             //選択肢を送る
         const res = await fetch(
-            `${process.env.NEXT_PUBLIC_API_URL}/session/current/problems/${idx}/answer`,
+            `${process.env.NEXT_PUBLIC_API_URL}/session/current/problems/${idx}/answer?sessionId=${sessionId}`,
             {
                 method: "post",
-                headers: {"Content-Type": "application/json"},
-                credentials: 'include',
+                headers: {
+                    "Content-Type": "application/json",
+                    ...(await getAuthHeader()),
+                },
                 body: JSON.stringify({selectedChoiceId: selectedId}),
             }
         );
@@ -39,14 +42,14 @@ export default function QuestionForm({idx,choices,initialselectedId,total}){
         }
         const nextIdx = idx+1;
         if(nextIdx < total){
-            router.push(`/problems?idx=${nextIdx}`)
+            router.push(`/problems?idx=${nextIdx}&sessionId=${sessionId}`)
         } else{
             router.push(`/mypage`)
         }
     };
 
     const handleBack = () => {
-        router.push(`/problems?idx=${Math.max(0, idx - 1)}`);
+        router.push(`/problems?idx=${Math.max(0, idx - 1)}&sessionId=${sessionId}`);
     }
 
     if (error) return <ErrorMessage error={error} />;

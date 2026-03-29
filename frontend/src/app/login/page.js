@@ -1,77 +1,54 @@
 // /login/page.js
 "use client";
-import {useState} from "react";
-import {useRouter} from "next/navigation"
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { signIn } from "aws-amplify/auth";
 
-export default function LoginPage(){
-  const [userId,setUserId] = useState("");
-  const [password,setPassword] = useState("");
-  const [error,setError] = useState("");
-  const [error2,setError2] = useState("");
+export default function LoginPage() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
   const router = useRouter();
 
   const doSubmit = async (e) => {
     e.preventDefault();
     setError("");
-    try{
-    const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/auth/login`,
-      {
-      method: "POST",
-      headers: {"Content-Type":"application/json"},
-      credentials: "include",//セッションidを保存したCookieを受け取る
-      body: JSON.stringify({userId,password}),
-      }
-    );
-
-    if(res.ok){
-      //ログイン成功。マイページへ
+    try {
+      await signIn({ username: email, password });
       router.push("/mypage");
-    }else{
-      const msg = await res.text();
-      setError(msg || `エラー: ${res.status}`);
+    } catch (err) {
+      setError(err.message || "ログインに失敗しました");
     }
-   }catch (e) {
-    setError2("通信エラーが発生しました");
-        return ;
-   }
-  }
+  };
 
-
-  if (error2) {
-    return <p><a href="" onClick={() => window.location.reload()}>再読み込み</a></p>
-  }
-
-  return(
+  return (
     <div className="container mt-4">
       <h2>ログイン</h2>
-      <form onSubmit = {doSubmit}>
-      <div className="mb-3">
-        <label htmlFor="userId" className="form-label">ID</label>
-        <input 
-          id="userId"
-          type = "text"
-          className="form-control"
-          value = {userId}
-          onChange = {e => setUserId(e.target.value)}
-        />
-      </div>
-      <div className="mb-3">
-        <label htmlFor="password" className="form-label">パスワード</label>
-        <input 
-          id="password"
-          type="password" 
-          className="form-control"
-          value={password} 
-          onChange={e => setPassword(e.target.value)}
-        />
-      </div>
+      <form onSubmit={doSubmit}>
+        <div className="mb-3">
+          <label htmlFor="email" className="form-label">メールアドレス</label>
+          <input
+            id="email"
+            type="email"
+            className="form-control"
+            value={email}
+            onChange={e => setEmail(e.target.value)}
+          />
+        </div>
+        <div className="mb-3">
+          <label htmlFor="password" className="form-label">パスワード</label>
+          <input
+            id="password"
+            type="password"
+            className="form-control"
+            value={password}
+            onChange={e => setPassword(e.target.value)}
+          />
+        </div>
         {error && <pre className="text-danger">{error}</pre>}
         <button type="submit" className="btn btn-primary">ログイン</button>
-      <p className="mt-2">新規登録は
-      <a href="/register">こちら</a>
-      </p>
+        <p className="mt-2">新規登録は<a href="/register">こちら</a></p>
       </form>
-      </div>
+    </div>
   );
 }

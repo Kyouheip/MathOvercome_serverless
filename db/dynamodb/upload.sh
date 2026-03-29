@@ -30,9 +30,6 @@ upload choices_05.json
 upload choices_06.json
 upload choices_07.json
 
-# ユーザー
-upload users.json
-
 # テストセッション
 upload test_sessions.json
 

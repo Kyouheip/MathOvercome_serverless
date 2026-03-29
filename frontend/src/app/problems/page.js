@@ -1,16 +1,17 @@
 // problems/page.js
 "use client";
 import { Suspense, useEffect, useState } from "react";
-import { useSearchParams, useRouter } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import QuestionForm from "./QuestionForm";
 import ErrorMessage from "@/components/ErrorMessage";
 import { useErrorHandler } from "@/hooks/useErrorHandler";
+import { getAuthHeader } from "@/lib/auth";
 
 function ProblemsContent() {
   const searchParams = useSearchParams();
-  const router = useRouter();
 
   const idx = Number(searchParams.get("idx") ?? 0);
+  const sessionId = searchParams.get("sessionId") ?? "";
 
   const [sp, setSp] = useState(null);
   const [error, setError] = useState(null);
@@ -21,8 +22,8 @@ function ProblemsContent() {
     const load = async () => {
       try {
         const res = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/session/current/problems/${idx}`,
-          { credentials: "include" }
+          `${process.env.NEXT_PUBLIC_API_URL}/session/current/problems/${idx}?sessionId=${sessionId}`,
+          { headers: await getAuthHeader() }
         );
 
         if (!errorHandler(res)) return;
@@ -57,11 +58,10 @@ function ProblemsContent() {
 
       <QuestionForm
         idx={idx}
+        sessionId={sessionId}
         choices={sp.choices}
         initialselectedId={sp.selectedId}
         total={sp.total}
-        onNext={() => router.push(`/problems?idx=${idx + 1}`)}
-        onPrev={() => router.push(`/problems?idx=${Math.max(0, idx - 1)}`)}
       />
 
       <div className="mt-4">

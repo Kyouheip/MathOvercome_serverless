@@ -43,7 +43,8 @@ func (h *SessionHandler) CreateTestSess(c *gin.Context) {
 
 // GET /session/current/problems/:idx
 func (h *SessionHandler) ViewOneProblem(c *gin.Context) {
-	if c.GetHeader("X-User-Sub") == "" {
+	userSub := c.GetHeader("X-User-Sub")
+	if userSub == "" {
 		c.Status(http.StatusUnauthorized)
 		return
 	}
@@ -56,9 +57,11 @@ func (h *SessionHandler) ViewOneProblem(c *gin.Context) {
 
 	idx, _ := strconv.Atoi(c.Param("idx"))
 
-	problem, err := h.testSessService.GetProblem(sessionID, idx)
+	problem, err := h.testSessService.GetProblem(sessionID, userSub, idx)
 	if err != nil {
 		switch {
+		case errors.Is(err, apperr.ErrForbidden):
+			c.Status(http.StatusForbidden)
 		case errors.Is(err, apperr.ErrOutOfRange):
 			c.Status(http.StatusBadRequest)
 		case errors.Is(err, apperr.ErrNotFound):
@@ -74,7 +77,8 @@ func (h *SessionHandler) ViewOneProblem(c *gin.Context) {
 
 // POST /session/current/problems/:idx/answer
 func (h *SessionHandler) SubmitAnswer(c *gin.Context) {
-	if c.GetHeader("X-User-Sub") == "" {
+	userSub := c.GetHeader("X-User-Sub")
+	if userSub == "" {
 		c.Status(http.StatusUnauthorized)
 		return
 	}
@@ -93,8 +97,10 @@ func (h *SessionHandler) SubmitAnswer(c *gin.Context) {
 		return
 	}
 
-	if err := h.testSessService.SubmitAnswer(sessionID, idx, req.SelectedChoiceID); err != nil {
+	if err := h.testSessService.SubmitAnswer(sessionID, userSub, idx, req.SelectedChoiceID); err != nil {
 		switch {
+		case errors.Is(err, apperr.ErrForbidden):
+			c.Status(http.StatusForbidden)
 		case errors.Is(err, apperr.ErrOutOfRange), errors.Is(err, apperr.ErrNotFound):
 			c.Status(http.StatusBadRequest)
 		default:

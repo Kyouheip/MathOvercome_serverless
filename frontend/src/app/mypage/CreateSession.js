@@ -3,7 +3,8 @@
 import {useRouter} from 'next/navigation';
 import {useState} from 'react';
 import ErrorMessage from '@/components/ErrorMessage';
-import { useErrorHandler } from "@/hooks/useErrorHandler"
+import { useErrorHandler } from "@/hooks/useErrorHandler";
+import { getAuthHeader } from "@/lib/auth";
 
 
 export default function CreateSession(){
@@ -18,15 +19,15 @@ export default function CreateSession(){
         const res = await fetch(
             `${process.env.NEXT_PUBLIC_API_URL}/session/test?includeIntegers=${includeIntegers}`,
             {
-            method: 'POST',
-            credentials: 'include',
+                method: 'POST',
+                headers: await getAuthHeader(),
             }
-
         );
         
        if (!errorHandler(res)) return;
-        
-        router.push(`/problems?idx=0`);
+
+        const { sessionId } = await res.json();
+        router.push(`/problems?idx=0&sessionId=${sessionId}`);
 
       }catch (e) {
         setError("通信エラーが発生しました");

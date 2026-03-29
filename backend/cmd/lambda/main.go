@@ -15,7 +15,7 @@ import (
 	"github.com/Kyouheip/MathOvercome_serverless/internal/router"
 )
 
-var ginLambda *ginadapter.GinLambda
+var ginLambda *ginadapter.GinLambdaV2
 
 func init() {
 	region := os.Getenv("AWS_REGION")
@@ -31,10 +31,10 @@ func init() {
 	client := dynamodb.NewFromConfig(cfg)
 
 	r := router.New(client)
-	ginLambda = ginadapter.New(r)
+	ginLambda = ginadapter.NewV2(r)
 }
 
-func handler(ctx context.Context, req events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
+func handler(ctx context.Context, req events.APIGatewayV2HTTPRequest) (events.APIGatewayV2HTTPResponse, error) {
 	return ginLambda.ProxyWithContext(ctx, req)
 }
 

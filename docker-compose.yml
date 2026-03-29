@@ -52,9 +52,6 @@ services:
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
       APP_ENV: local
       PORT: "8080"
-      COGNITO_ENDPOINT: http://cognito-local:9229
-      COGNITO_USER_POOL_ID: ${COGNITO_USER_POOL_ID}
-      COGNITO_CLIENT_ID: ${COGNITO_CLIENT_ID}
     depends_on:
       dynamodb-setup:
         condition: service_completed_successfully
@@ -68,6 +65,8 @@ services:
       dockerfile: Dockerfile
       args:
         NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL}
+        NEXT_PUBLIC_COGNITO_USER_POOL_ID: ${NEXT_PUBLIC_COGNITO_USER_POOL_ID}
+        NEXT_PUBLIC_COGNITO_CLIENT_ID: ${NEXT_PUBLIC_COGNITO_CLIENT_ID}
     container_name: mathovercome-frontend
     ports:
       - "3000:3000"
