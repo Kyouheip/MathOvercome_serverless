@@ -12,7 +12,6 @@ aws dynamodb create-table \
     AttributeName=sk,AttributeType=S \
     AttributeName=gsi1pk,AttributeType=S \
     AttributeName=gsi1sk,AttributeType=S \
-    AttributeName=user_id,AttributeType=S \
   --key-schema \
     AttributeName=pk,KeyType=HASH \
     AttributeName=sk,KeyType=RANGE \
@@ -22,13 +21,6 @@ aws dynamodb create-table \
       "KeySchema": [
         {"AttributeName": "gsi1pk", "KeyType": "HASH"},
         {"AttributeName": "gsi1sk", "KeyType": "RANGE"}
-      ],
-      "Projection": {"ProjectionType": "ALL"}
-    },
-    {
-      "IndexName": "GSI2",
-      "KeySchema": [
-        {"AttributeName": "user_id", "KeyType": "HASH"}
       ],
       "Projection": {"ProjectionType": "ALL"}
     }
