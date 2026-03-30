@@ -40,10 +40,33 @@ jobs:
               - '.github/workflows/deploy.yml'
 
   # -----------------------------------------
+  # バックエンドのテスト
+  # -----------------------------------------
+  test-backend:
+    needs: changes
+    if: needs.changes.outputs.backend == 'true'
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: backend/go.mod
+          cache-dependency-path: backend/go.sum
+
+      - name: Run tests
+        run: go test ./...
+
+  # -----------------------------------------
   # バックエンドのデプロイ
   # -----------------------------------------
   deploy-backend:
-    needs: changes
+    needs: [changes, test-backend]
     if: needs.changes.outputs.backend == 'true'
     runs-on: ubuntu-latest
     defaults:

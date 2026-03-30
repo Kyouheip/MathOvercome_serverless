@@ -89,3 +89,33 @@ Frontend を EC2 コンテナから分離し、コスト削減、セキュリテ
 
 ---
 
+## Phase 7: 完全サーバーレス化と認証基盤の統合（2026/3）
+
+バックエンドを AWS Lambda へ移行し、Amazon Cognito による認証基盤を導入。
+
+### コンピューティング・実行環境
+- **ECR**: Go アプリをイメージ化してプッシュ
+- **ライフサイクルポリシー**: ECR イメージの自動削除設定
+- **AWS Lambda**: 
+    - タイムアウトを 30 秒に設定
+    - 環境変数の移行（.env から Lambda 設定へ）
+
+### データベース・権限管理
+- **DynamoDB**: オンデマンドモード、GSI の作成
+- **IAM**: Lambda から DynamoDB へのアクセス権限設定
+- **テストイベント**: Lambda コンソールでの動作確認
+
+### API 基盤・認証
+- **API Gateway (HTTP API)**: バックエンドの入り口として導入
+- **Amazon Cognito**: ユーザープール作成
+- **JWT 認証**: オーソライザーによる Authorization ヘッダーの検証
+- **ID 統合**: ユーザー ID を Cognito の **sub** に変更
+- **ヘッダーマッピング**: API Gateway から Lambda へ `X-User-Sub` 等を渡す設定
+- **Amplify SDK**: フロントエンドへの組み込みとサインアップ・ログイン実装
+
+### CI/CD・運用
+- **GitHub Actions**: ECR プッシュ、Lambda 更新、S3 デプロイの自動化
+- **GitHub Secrets**: AWS アクセスキー、エンドポイント等の管理
+
+---
+

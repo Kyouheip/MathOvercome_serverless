@@ -6,7 +6,3 @@ variable "aws_region" {
 variable "project_name" {
   default = "mathovercome"
 }
-
-variable "session_secret" {
-  sensitive = true
-}
