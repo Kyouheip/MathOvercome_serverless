@@ -44,8 +44,8 @@ resource "aws_apigatewayv2_integration" "lambda" {
 
   # JWT認証済みのCognitoクレームをヘッダーに注入（Lambda側でX-User-Subを読む）
   request_parameters = {
-    "overwrite:header.X-User-Sub"  = "$request.auth.claims.sub"
-    "overwrite:header.X-User-Name" = "$request.auth.claims.name"
+    "overwrite:header.X-User-Sub"  = "$context.authorizer.claims.sub"
+    "overwrite:header.X-User-Name" = "$context.authorizer.claims.name"
   }
 }
 
