@@ -20,6 +20,25 @@ resource "aws_cloudfront_origin_access_control" "oac" {
   signing_protocol                  = "sigv4"
 }
 
+# CloudFront Function（拡張子なしURLを.htmlにリライト）
+resource "aws_cloudfront_function" "url_rewrite" {
+  name    = "${var.project_name}-url-rewrite"
+  runtime = "cloudfront-js-2.0"
+  publish = true
+  code    = <<-EOF
+    async function handler(event) {
+      const request = event.request;
+      const uri = request.uri;
+      if (uri.endsWith('/')) {
+        request.uri += 'index.html';
+      } else if (!uri.includes('.')) {
+        request.uri += '.html';
+      }
+      return request;
+    }
+  EOF
+}
+
 # CloudFront ディストリビューション
 resource "aws_cloudfront_distribution" "cdn" {
   origin {
@@ -37,6 +56,11 @@ resource "aws_cloudfront_distribution" "cdn" {
     target_origin_id = "S3-${aws_s3_bucket.frontend.id}"
     cache_policy_id = "658327ea-f89d-4fab-a63d-7e88639e58f6"
     viewer_protocol_policy = "redirect-to-https"
+
+    function_association {
+      event_type   = "viewer-request"
+      function_arn = aws_cloudfront_function.url_rewrite.arn
+    }
   }
 
   restrictions {

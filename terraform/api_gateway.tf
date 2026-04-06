@@ -2,8 +2,6 @@ resource "aws_apigatewayv2_api" "http_api" {
   name          = "${var.project_name}-gateway"
   protocol_type = "HTTP"
 
-  # OPTIONSプリフライトはAPI Gatewayで処理し、Lambdaを呼び出さない
-  # GET/POST等の実際のCORSヘッダーはLambda（Gin）側で付与
   cors_configuration {
     allow_origins     = ["https://${aws_cloudfront_distribution.cdn.domain_name}"]
     allow_methods     = ["GET", "POST", "OPTIONS"]
