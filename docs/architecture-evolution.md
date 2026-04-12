@@ -119,3 +119,22 @@ Frontend を EC2 コンテナから分離し、コスト削減、セキュリテ
 
 ---
 
+## Phase 8: IaC 化と CI/CD の最適化（2026/4）
+
+マネジメントコンソールで行った手動構築を Terraform でコード化し、インフラの再現性と管理効率を向上。
+
+### Terraform によるリソース構築手順
+- **ECR の先行デプロイ**: Lambda 作成時にイメージが存在しないとエラーになるため、`terraform apply -target=aws_ecr_repository.app` で先にリポジトリのみを構築
+- **初回イメージの手動プッシュ**: CI/CD パイプラインを介さず、ローカルから手動で初回用 Docker イメージをビルド・プッシュして Lambda 作成の準備を完了
+- **全リソースのプロビジョニング**: イメージ存在を確認後、通常の `terraform apply` で Lambda、API Gateway、DynamoDB、Cognito 等の全インフラを一括構築
+
+### API 基盤・認証と CORS 制御
+- **OPTIONS 認証の最適化**: 以前は OPTIONS リクエストに対しても JWT 認証を行いエラーになっていたため、OPTIONS のときは認証をしない設定して CORS プリフライトを正常化
+- **ルーティングの厳密化**: `ANY` を避け `GET` / `POST` を個別に定義。API Gateway 側でプリフライトを完結させることで、Lambda 側に OPTIONS の処理ロジックがないことによるエラーを回避
+
+### CI/CD・運用
+- **再現性の確保**: `npm ci` を導入し`package-lock.json` のバージョンを厳密に反映。ローカルでの動作確認と GitHub VM 上でのビルドの差異を排除
+- **テスト実行環境の最適化**: 実行速度を優先し、Docker イメージビルド後ではなく GitHub VM 上の環境で Go の自動テストを直接実施
+
+---
+

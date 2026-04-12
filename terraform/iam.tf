@@ -19,7 +19,7 @@ resource "aws_iam_role_policy" "lambda_dynamo" {
     Version = "2012-10-17"
     Statement = [{
       Effect = "Allow"
-      Action = ["dynamodb:PutItem", "dynamodb:GetItem", "dynamodb:UpdateItem", "dynamodb:Query"]
+      Action = ["dynamodb:PutItem", "dynamodb:GetItem", "dynamodb:UpdateItem", "dynamodb:Query", "dynamodb:BatchGetItem", "dynamodb:BatchWriteItem"]
       Resource = [
         aws_dynamodb_table.main.arn,
         "${aws_dynamodb_table.main.arn}/index/*"

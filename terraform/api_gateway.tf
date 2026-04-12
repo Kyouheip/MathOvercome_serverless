@@ -36,9 +36,10 @@ resource "aws_apigatewayv2_stage" "default" {
 }
 
 resource "aws_apigatewayv2_integration" "lambda" {
-  api_id           = aws_apigatewayv2_api.http_api.id
-  integration_type = "AWS_PROXY"
-  integration_uri  = aws_lambda_function.backend.invoke_arn
+  api_id                 = aws_apigatewayv2_api.http_api.id
+  integration_type       = "AWS_PROXY"
+  integration_uri        = aws_lambda_function.backend.invoke_arn
+  payload_format_version = "2.0"
 
   # JWT認証済みのCognitoクレームをヘッダーに注入（Lambda側でX-User-Subを読む）
   request_parameters = {
@@ -47,9 +48,17 @@ resource "aws_apigatewayv2_integration" "lambda" {
   }
 }
 
-resource "aws_apigatewayv2_route" "any" {
+resource "aws_apigatewayv2_route" "get" {
   api_id             = aws_apigatewayv2_api.http_api.id
-  route_key          = "ANY /{proxy+}"
+  route_key          = "GET /{proxy+}"
+  target             = "integrations/${aws_apigatewayv2_integration.lambda.id}"
+  authorization_type = "JWT"
+  authorizer_id      = aws_apigatewayv2_authorizer.cognito.id
+}
+
+resource "aws_apigatewayv2_route" "post" {
+  api_id             = aws_apigatewayv2_api.http_api.id
+  route_key          = "POST /{proxy+}"
   target             = "integrations/${aws_apigatewayv2_integration.lambda.id}"
   authorization_type = "JWT"
   authorizer_id      = aws_apigatewayv2_authorizer.cognito.id
