@@ -45,7 +45,6 @@ aws dynamodb wait table-exists \
 
 echo "Uploading data..."
 for f in \
-  categories.json \
   problems_01.json problems_02.json \
   choices_01.json choices_02.json choices_03.json choices_04.json choices_05.json choices_06.json choices_07.json \
   test_sessions.json \

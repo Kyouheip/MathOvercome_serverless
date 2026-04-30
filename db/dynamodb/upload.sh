@@ -14,9 +14,6 @@ upload() {
   echo "Done: $1"
 }
 
-# カテゴリ
-upload categories.json
-
 # 問題 (42件)
 upload problems_01.json
 upload problems_02.json
