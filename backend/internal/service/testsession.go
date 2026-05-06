@@ -46,6 +46,8 @@ func (s *TestSessionService) CreateTestSess(userSub string, includeIntegers bool
 		sessProbs = append(sessProbs, model.SessionProblem{
 			TestSessionID: session.ID,
 			ProblemID:     p.ID,
+			CategoryID:    p.CategoryID,
+            CategoryName:  catNames[p.CategoryID],
 		})
 	}
 
