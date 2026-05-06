@@ -47,7 +47,7 @@ func (s *TestSessionService) CreateTestSess(userSub string, includeIntegers bool
 			TestSessionID: session.ID,
 			ProblemID:     p.ID,
 			CategoryID:    p.CategoryID,
-            CategoryName:  catNames[p.CategoryID],
+            CategoryName:  repository.CatNames[p.CategoryID],
 		})
 	}
 

@@ -27,7 +27,7 @@ func bg() context.Context {
 }
 
 // カテゴリID→カテゴリ名の固定マッピング
-var catNames = map[int]string{
+var CatNames = map[int]string{
 	1: "数と式",
 	2: "2次関数",
 	3: "図形と計量",
