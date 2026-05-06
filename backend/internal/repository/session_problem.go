@@ -199,47 +199,20 @@ func (r *Repository) SaveSessionProblems(sps []model.SessionProblem) error {
 		return nil
 	}
 
-	// BatchGetItem で問題のカテゴリ情報を一括取得
-	keys := make([]map[string]types.AttributeValue, len(sps))
-	for i, sp := range sps {
-		keys[i] = map[string]types.AttributeValue{
-			"pk": &types.AttributeValueMemberS{Value: fmt.Sprintf("PROBLEM#%d", sp.ProblemID)},
-			"sk": &types.AttributeValueMemberS{Value: "#METADATA"},
-		}
-	}
-	batchOut, err := r.client.BatchGetItem(bg(), &dynamodb.BatchGetItemInput{
-		RequestItems: map[string]types.KeysAndAttributes{
-			tableName(): {Keys: keys},
-		},
-	})
-	if err != nil {
-		return err
-	}
-
-	// problem_id → category_id のマップを構築
-	catIDMap := make(map[uint64]int)
-	for _, item := range batchOut.Responses[tableName()] {
-		var dp dynamoProblem
-		if err := attributevalue.UnmarshalMap(item, &dp); err != nil {
-			return err
-		}
-		catIDMap[dp.ID] = dp.CategoryID
-	}
-
 	// ID を採番して書き込みリクエストを生成
 	base := uint64(time.Now().UnixNano())
 	requests := make([]types.WriteRequest, len(sps))
 	for i := range sps {
 		sps[i].ID = base + uint64(i)
-		catID := catIDMap[sps[i].ProblemID]
+
 		dsp := dynamoSP{
 			PK:           fmt.Sprintf("SESSION#%d", sps[i].TestSessionID),
 			SK:           fmt.Sprintf("SP#%d", sps[i].ID),
 			ID:           sps[i].ID,
 			SessionID:    sps[i].TestSessionID,
 			ProblemID:    sps[i].ProblemID,
-			CategoryID:   catID,
-			CategoryName: catNames[catID],
+			CategoryID:   sps[i].CategoryID,
+			CategoryName: sps[i].CategoryName,
 		}
 		item, err := attributevalue.MarshalMap(dsp)
 		if err != nil {
