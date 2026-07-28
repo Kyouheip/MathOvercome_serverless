@@ -11,7 +11,6 @@ resource "aws_lambda_function" "backend" {
   environment {
     variables = {
       DYNAMODB_TABLE = aws_dynamodb_table.main.name
-      ALLOW_ORIGIN   = "https://${aws_cloudfront_distribution.cdn.domain_name}"
     }
   }
 }
